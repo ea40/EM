@@ -27,16 +27,20 @@ const EVENT_TYPE_LABELS: Record<EventType, string> = {
 };
 
 /** Categorical palette — deliberately distinct from the triage semantic colours. */
-const CATEGORY_COLORS = ['bg-rose-500', 'bg-amber-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-violet-500', 'bg-slate-500'];
+const CATEGORY_COLORS = [
+  'bg-rose-500',
+  'bg-amber-500',
+  'bg-cyan-500',
+  'bg-emerald-500',
+  'bg-violet-500',
+  'bg-slate-500'
+];
 
 export function AnalyticsPage({ alerts, patients }: AnalyticsPageProps) {
   const subCityStats = useMemo(() => groupCounts(alerts.map(a => a.location.subCity)), [alerts]);
   const triggerStats = useMemo(() => groupCounts(alerts.map(a => a.eventType)), [alerts]);
 
-  const dispatched = useMemo(
-    () => alerts.filter(a => typeof a.etaMinutes === 'number'),
-    [alerts]
-  );
+  const dispatched = useMemo(() => alerts.filter(a => typeof a.etaMinutes === 'number'), [alerts]);
 
   const meanEtaMinutes = useMemo(() => {
     if (dispatched.length === 0) return null;
@@ -44,10 +48,7 @@ export function AnalyticsPage({ alerts, patients }: AnalyticsPageProps) {
     return total / dispatched.length;
   }, [dispatched]);
 
-  const resolvedCount = useMemo(
-    () => alerts.filter(a => a.code === 'RESOLVED').length,
-    [alerts]
-  );
+  const resolvedCount = useMemo(() => alerts.filter(a => a.code === 'RESOLVED').length, [alerts]);
 
   const triageBreakdown = useMemo(
     () =>

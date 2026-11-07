@@ -122,7 +122,10 @@ export function SettingsPage({ thresholds, onSaveThresholds }: SettingsPageProps
         <div className="flex items-center gap-2">
           {isDirty && errors.length === 0 && (
             <span className="flex items-center gap-1.5 rounded-lg border border-amber-800/70 bg-amber-950/50 px-2.5 py-1.5 text-[11px] font-bold text-amber-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"
+                aria-hidden="true"
+              />
               Unsaved changes
             </span>
           )}
@@ -139,10 +142,7 @@ export function SettingsPage({ thresholds, onSaveThresholds }: SettingsPageProps
       </header>
 
       {errors.length > 0 && (
-        <div
-          role="alert"
-          className="rounded-xl border border-rose-800/70 bg-rose-950/40 p-3.5"
-        >
+        <div role="alert" className="rounded-xl border border-rose-800/70 bg-rose-950/40 p-3.5">
           <p className="flex items-center gap-2 text-xs font-bold text-rose-300">
             <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />
             Configuration cannot be applied
@@ -166,9 +166,9 @@ export function SettingsPage({ thresholds, onSaveThresholds }: SettingsPageProps
           </header>
 
           <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-            Applied by the decoder to every inbound GSM payload. A value crossing the critical
-            bound escalates the alert to <span className="font-bold text-rose-400">Critical</span>;
-            a value crossing the warning bound escalates to{' '}
+            Applied by the decoder to every inbound GSM payload. A value crossing the critical bound
+            escalates the alert to <span className="font-bold text-rose-400">Critical</span>; a
+            value crossing the warning bound escalates to{' '}
             <span className="font-bold text-amber-400">Elevated</span>.
           </p>
 

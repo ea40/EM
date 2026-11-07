@@ -43,7 +43,8 @@ export function DispatchModal({ alert, fleet, onClose, onConfirmDispatch }: Disp
   const availableUnits = destination
     ? selectDispatchableAmbulances(fleet, destination.hospital.id)
     : [];
-  const unit = availableUnits.find(candidate => candidate.id === ambulanceId) ?? availableUnits[0] ?? null;
+  const unit =
+    availableUnits.find(candidate => candidate.id === ambulanceId) ?? availableUnits[0] ?? null;
   const canDispatch = Boolean(destination && unit);
   const style = triageStyle(alert.code);
 
@@ -99,7 +100,9 @@ export function DispatchModal({ alert, fleet, onClose, onConfirmDispatch }: Disp
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="truncate text-sm font-bold text-slate-100">{alert.patientName}</h3>
-              <span className="data-num font-mono text-[10px] text-slate-400">{alert.patientId}</span>
+              <span className="data-num font-mono text-[10px] text-slate-400">
+                {alert.patientId}
+              </span>
               <span
                 className="rounded border px-1.5 py-0.5 text-[10px] font-bold uppercase"
                 style={{ color: style.hex, borderColor: `${style.hex}66` }}
@@ -129,7 +132,11 @@ export function DispatchModal({ alert, fleet, onClose, onConfirmDispatch }: Disp
             <span className="text-[10px] text-slate-500">Ranked by distance from patient</span>
           </div>
 
-          <div role="radiogroup" aria-label="Receiving hospital" className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
+          <div
+            role="radiogroup"
+            aria-label="Receiving hospital"
+            className="max-h-56 space-y-1.5 overflow-y-auto pr-1"
+          >
             {ranked.map((entry, index) => {
               const isSelected = destination?.hospital.id === entry.hospital.id;
               /*

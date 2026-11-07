@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { MIN_ETA_MINUTES, URBAN_TRAFFIC_MINUTES_PER_KM, estimateEtaMinutes, haversineKm } from '../geo';
+import {
+  MIN_ETA_MINUTES,
+  URBAN_TRAFFIC_MINUTES_PER_KM,
+  estimateEtaMinutes,
+  haversineKm
+} from '../geo';
 
 describe('haversineKm', () => {
   it('returns zero for identical coordinates', () => {

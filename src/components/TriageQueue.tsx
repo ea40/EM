@@ -277,9 +277,7 @@ function AlertCard({
                   {alert.patientId}
                 </span>
               </div>
-              <p className="truncate text-[10px] text-slate-400">
-                {alert.chronicCondition}
-              </p>
+              <p className="truncate text-[10px] text-slate-400">{alert.chronicCondition}</p>
             </div>
           </div>
 

@@ -29,12 +29,10 @@ export function spo2Severity(spo2: number, thresholds: ThresholdSettings): Vital
  * `hrCriticalHigh` is RED, but a rate below `hrCriticalLow` is only AMBER —
  * bradycardia escalates to elevated, not critical, in this triage tree.
  */
-export function heartRateSeverity(
-  heartRate: number,
-  thresholds: ThresholdSettings
-): VitalSeverity {
+export function heartRateSeverity(heartRate: number, thresholds: ThresholdSettings): VitalSeverity {
   if (heartRate > thresholds.hrCriticalHigh) return 'critical';
-  if (heartRate > thresholds.hrWarningHigh || heartRate < thresholds.hrCriticalLow) return 'warning';
+  if (heartRate > thresholds.hrWarningHigh || heartRate < thresholds.hrCriticalLow)
+    return 'warning';
   return 'normal';
 }
 

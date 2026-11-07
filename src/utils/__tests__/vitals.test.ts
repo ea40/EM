@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ThresholdSettings } from '../../types';
 import { DEFAULT_THRESHOLDS } from '../../config/thresholds';
-import {
-  heartRateSeverity,
-  impactSeverity,
-  spo2Severity,
-  temperatureSeverity
-} from '../vitals';
+import { heartRateSeverity, impactSeverity, spo2Severity, temperatureSeverity } from '../vitals';
 
 const withOverrides = (overrides: Partial<ThresholdSettings>): ThresholdSettings => ({
   ...DEFAULT_THRESHOLDS,
@@ -95,7 +90,9 @@ describe('temperatureSeverity', () => {
   });
 
   it('warns only strictly above the fever threshold', () => {
-    expect(temperatureSeverity(DEFAULT_THRESHOLDS.tempFeverHigh, DEFAULT_THRESHOLDS)).toBe('normal');
+    expect(temperatureSeverity(DEFAULT_THRESHOLDS.tempFeverHigh, DEFAULT_THRESHOLDS)).toBe(
+      'normal'
+    );
     expect(temperatureSeverity(DEFAULT_THRESHOLDS.tempFeverHigh + 0.1, DEFAULT_THRESHOLDS)).toBe(
       'warning'
     );
@@ -111,6 +108,8 @@ describe('temperatureSeverity', () => {
 describe('impactSeverity', () => {
   it('flags an impact strictly above the configured g threshold', () => {
     expect(impactSeverity(DEFAULT_THRESHOLDS.fallAccelG, DEFAULT_THRESHOLDS)).toBe('normal');
-    expect(impactSeverity(DEFAULT_THRESHOLDS.fallAccelG + 0.1, DEFAULT_THRESHOLDS)).toBe('critical');
+    expect(impactSeverity(DEFAULT_THRESHOLDS.fallAccelG + 0.1, DEFAULT_THRESHOLDS)).toBe(
+      'critical'
+    );
   });
 });

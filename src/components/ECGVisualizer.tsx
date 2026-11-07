@@ -421,7 +421,10 @@ export function ECGVisualizer({ patient, thresholds }: ECGVisualizerProps) {
         <section className="flex min-h-0 flex-1 flex-col rounded-xl border border-slate-800 bg-[#0B0F19] p-2 overflow-hidden">
           <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-800 pb-1.5 shrink-0">
             <h3 className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-300">
-              <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse shrink-0" aria-hidden="true" />
+              <Activity
+                className="w-3.5 h-3.5 text-cyan-400 animate-pulse shrink-0"
+                aria-hidden="true"
+              />
               <span>Live ECG &middot; Lead II</span>
               <span
                 className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.2 text-[8px] font-mono font-bold transition-all duration-150 ${
@@ -695,18 +698,19 @@ export function ECGVisualizer({ patient, thresholds }: ECGVisualizerProps) {
       <footer className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-800 pt-1 text-[9px] text-slate-500">
         <span className="flex items-center gap-1">
           <Battery className="w-3 h-3" aria-hidden="true" />
-          Wearable battery <span className="data-num font-mono font-bold text-slate-300">{vitals.battery}%</span>
+          Wearable battery{' '}
+          <span className="data-num font-mono font-bold text-slate-300">{vitals.battery}%</span>
         </span>
         <span className="flex items-center gap-1">
           <Radio className="w-3 h-3" aria-hidden="true" />
-          GSM signal <span className="data-num font-mono font-bold text-slate-300">{vitals.gsmSignal}/5</span>
+          GSM signal{' '}
+          <span className="data-num font-mono font-bold text-slate-300">{vitals.gsmSignal}/5</span>
         </span>
         <span className="data-num ml-auto font-mono">Updated {vitals.lastUpdated}</span>
       </footer>
     </div>
   );
 }
-
 
 /**
  * Mathematically modeled human Lead II ECG waveform (PQRSTU complex).
@@ -760,7 +764,7 @@ function getECGVoltage(phase: number, condition: string, timeSec = 0): number {
   // 8. T-Wave (Ventricular Repolarization): smooth, slightly asymmetric wave
   const tCenter = 0.58;
   const tWidth = phi < tCenter ? 0.052 : 0.042;
-  let tAmp = 0.30;
+  let tAmp = 0.3;
   if (condition.includes('COPD') || condition.includes('Hypoxia')) {
     // Hypoxia causes T-wave flattening or inversion
     tAmp = 0.06;

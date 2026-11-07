@@ -2,16 +2,7 @@ import { useEffect, useState } from 'react';
 import type { PageRoute } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import { formatClockTime } from '../utils/format';
-import {
-  Clock,
-  Heart,
-  Menu,
-  Radio,
-  ShieldAlert,
-  Volume2,
-  VolumeX,
-  Zap
-} from 'lucide-react';
+import { Clock, Heart, Menu, Radio, ShieldAlert, Volume2, VolumeX, Zap } from 'lucide-react';
 
 type HeaderProps = {
   currentRoute: PageRoute;
@@ -106,7 +97,8 @@ export function Header({
               </h1>
               <span className="hidden xl:inline text-[10px] text-slate-500 font-mono">·</span>
               <span className="hidden xl:inline text-[10px] text-slate-400 truncate">
-                Designed by <strong className="font-semibold text-slate-300">Emran Abduljelil Reshad</strong>
+                Designed by{' '}
+                <strong className="font-semibold text-slate-300">Emran Abduljelil Reshad</strong>
               </span>
             </div>
           </div>

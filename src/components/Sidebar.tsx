@@ -193,6 +193,28 @@ export function Sidebar({
     window.addEventListener('pointerup', onPointerUp);
   };
 
+  const handleResetSidebarWidth = () => {
+    setSidebarWidth(260);
+    try {
+      localStorage.setItem('emer_sidebar_width', '260');
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleSidebarKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setSidebarWidth(w => Math.max(220, w - 20));
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      setSidebarWidth(w => Math.min(460, w + 20));
+    } else if (e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      handleResetSidebarWidth();
+    }
+  };
+
   return (
     <aside
       className={`relative z-40 flex h-screen flex-col justify-between border-r border-slate-800 bg-navy-950 shadow-elev-3 ${
@@ -205,17 +227,15 @@ export function Sidebar({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize navigation sidebar"
+          aria-valuenow={Math.round(sidebarWidth)}
+          aria-valuemin={220}
+          aria-valuemax={460}
+          tabIndex={0}
+          onKeyDown={handleSidebarKeyDown}
           onPointerDown={handleSidebarPointerDown}
-          onDoubleClick={() => {
-            setSidebarWidth(260);
-            try {
-              localStorage.setItem('emer_sidebar_width', '260');
-            } catch {
-              // ignore
-            }
-          }}
-          className="group absolute right-0 top-0 bottom-0 w-2.5 translate-x-1/2 cursor-col-resize flex items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 select-none z-50"
-          title="Drag to resize sidebar · Double-click to reset"
+          onDoubleClick={handleResetSidebarWidth}
+          className="group absolute right-0 top-0 bottom-0 w-2.5 translate-x-1/2 cursor-col-resize flex items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-50"
+          title="Drag or use Left/Right arrow keys to resize sidebar · Double-click to reset"
         >
           <div className="h-10 w-1 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
         </div>
@@ -277,9 +297,7 @@ export function Sidebar({
       <nav aria-label="Primary" className="flex-1 space-y-4 overflow-y-auto p-3">
         {navSections.map(section => (
           <section key={section.id}>
-            {!isCollapsed && (
-              <h2 className="eyebrow mb-1.5 px-2.5">{section.label}</h2>
-            )}
+            {!isCollapsed && <h2 className="eyebrow mb-1.5 px-2.5">{section.label}</h2>}
 
             <ul className="space-y-1">
               {section.items.map(item => {
@@ -311,9 +329,7 @@ export function Sidebar({
 
                       <span
                         className={`flex items-center gap-3 ${
-                          isActive
-                            ? 'text-rose-400'
-                            : 'text-slate-500 group-hover:text-cyan-400'
+                          isActive ? 'text-rose-400' : 'text-slate-500 group-hover:text-cyan-400'
                         }`}
                       >
                         {item.icon}

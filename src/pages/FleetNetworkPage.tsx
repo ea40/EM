@@ -48,7 +48,10 @@ export function FleetNetworkPage({ fleet, alerts }: FleetNetworkPageProps) {
         </div>
 
         <span className="data-num flex items-center gap-1.5 self-start rounded-lg border border-emerald-800/70 bg-emerald-950/50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"
+            aria-hidden="true"
+          />
           {availableCount} of {fleet.length} units ready
         </span>
       </header>
@@ -164,19 +167,33 @@ export function FleetNetworkPage({ fleet, alerts }: FleetNetworkPageProps) {
             <caption className="sr-only">Ambulance units, crew and current assignments</caption>
             <thead className="border-b border-slate-800 bg-navy-950/60 text-[10px] uppercase tracking-wider text-slate-400">
               <tr>
-                <th scope="col" className="p-3 font-semibold">Unit</th>
-                <th scope="col" className="p-3 font-semibold">Home hub</th>
-                <th scope="col" className="p-3 font-semibold">Status</th>
-                <th scope="col" className="p-3 font-semibold">Crew</th>
-                <th scope="col" className="p-3 font-semibold">Zone</th>
-                <th scope="col" className="p-3 font-semibold">Fuel</th>
-                <th scope="col" className="p-3 font-semibold">Contact</th>
+                <th scope="col" className="p-3 font-semibold">
+                  Unit
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Home hub
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Status
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Crew
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Zone
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Fuel
+                </th>
+                <th scope="col" className="p-3 font-semibold">
+                  Contact
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {fleet.map(unit => {
                 const assignedAlert = unit.assignedAlertId
-                  ? alertById.get(unit.assignedAlertId) ?? null
+                  ? (alertById.get(unit.assignedAlertId) ?? null)
                   : null;
                 const assignedStyle = assignedAlert ? triageStyle(assignedAlert.code) : null;
 

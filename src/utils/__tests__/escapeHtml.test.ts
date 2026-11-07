@@ -3,9 +3,7 @@ import { escapeHtml, safeImageUrl } from '../escapeHtml';
 
 describe('escapeHtml', () => {
   it('escapes every character that can break out of an attribute or tag', () => {
-    expect(escapeHtml('<script>alert(1)</script>')).toBe(
-      '&lt;script&gt;alert(1)&lt;/script&gt;'
-    );
+    expect(escapeHtml('<script>alert(1)</script>')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
     expect(escapeHtml('a & b')).toBe('a &amp; b');
     expect(escapeHtml('"quoted"')).toBe('&quot;quoted&quot;');
     expect(escapeHtml("it's")).toBe('it&#39;s');

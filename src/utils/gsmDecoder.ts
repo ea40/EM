@@ -124,7 +124,11 @@ export function decodeGSMSMS(
      * relocates the patient — a fall alert would be plotted in the Atlantic.
      */
     if (part.startsWith('HR:')) {
-      hr = clamp(toFiniteNumber(part.slice(3), DEFAULTS.hr), VITAL_RANGES.heartRate.min, VITAL_RANGES.heartRate.max);
+      hr = clamp(
+        toFiniteNumber(part.slice(3), DEFAULTS.hr),
+        VITAL_RANGES.heartRate.min,
+        VITAL_RANGES.heartRate.max
+      );
     } else if (part.startsWith('SPO2:')) {
       spo2 = clamp(
         toFiniteNumber(part.slice(5).replace('%', ''), DEFAULTS.spo2),
@@ -146,8 +150,16 @@ export function decodeGSMSMS(
     } else if (part.startsWith('ACC:')) {
       const axes = part.slice(4).split(',');
       if (axes.length >= 3) {
-        accelX = clamp(toFiniteNumber(axes[0], 0), VITAL_RANGES.acceleration.min, VITAL_RANGES.acceleration.max);
-        accelY = clamp(toFiniteNumber(axes[1], 0), VITAL_RANGES.acceleration.min, VITAL_RANGES.acceleration.max);
+        accelX = clamp(
+          toFiniteNumber(axes[0], 0),
+          VITAL_RANGES.acceleration.min,
+          VITAL_RANGES.acceleration.max
+        );
+        accelY = clamp(
+          toFiniteNumber(axes[1], 0),
+          VITAL_RANGES.acceleration.min,
+          VITAL_RANGES.acceleration.max
+        );
         accelZ = clamp(
           toFiniteNumber(axes[2], DEFAULTS.accelZ),
           VITAL_RANGES.acceleration.min,

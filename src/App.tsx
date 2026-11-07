@@ -94,7 +94,10 @@ export function App() {
 
   const appendLog = (entry: Omit<TerminalLog, 'id' | 'timestamp'>) => {
     setLogs(prev => {
-      const next = [...prev, { ...entry, id: `LOG-${Date.now()}-${prev.length}`, timestamp: formatClockTime() }];
+      const next = [
+        ...prev,
+        { ...entry, id: `LOG-${Date.now()}-${prev.length}`, timestamp: formatClockTime() }
+      ];
       // The console can run for a full shift; unbounded growth is a leak.
       return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
     });
@@ -126,7 +129,10 @@ export function App() {
       setPatients(prev =>
         prev.map(p => {
           const hrDelta = (Math.random() - 0.5) * 2;
-          const nextHeartRate = Math.max(50, Math.min(180, Math.round(p.currentVitals.heartRate + hrDelta)));
+          const nextHeartRate = Math.max(
+            50,
+            Math.min(180, Math.round(p.currentVitals.heartRate + hrDelta))
+          );
           return {
             ...p,
             currentVitals: {
@@ -256,9 +262,7 @@ export function App() {
     // available pool or the next dispatch will offer a vehicle already en route.
     setFleet(prev =>
       prev.map(unit =>
-        unit.id === ambulanceId
-          ? { ...unit, status: 'EN_ROUTE', assignedAlertId: alertId }
-          : unit
+        unit.id === ambulanceId ? { ...unit, status: 'EN_ROUTE', assignedAlertId: alertId } : unit
       )
     );
 
@@ -282,9 +286,7 @@ export function App() {
     if (patientId) {
       setPatients(prev =>
         prev.map(p =>
-          p.id === patientId
-            ? { ...p, triageStatus: 'GREEN', distressReason: undefined }
-            : p
+          p.id === patientId ? { ...p, triageStatus: 'GREEN', distressReason: undefined } : p
         )
       );
     }
@@ -377,7 +379,11 @@ export function App() {
           )}
 
           {currentRoute === 'SIMULATOR' && (
-            <SimulatorPage onSimulateAlert={handleSimulateAlert} logs={logs} thresholds={thresholds} />
+            <SimulatorPage
+              onSimulateAlert={handleSimulateAlert}
+              logs={logs}
+              thresholds={thresholds}
+            />
           )}
 
           {currentRoute === 'HARDWARE' && (

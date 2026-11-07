@@ -203,11 +203,9 @@ export function MapView({ alerts, fleet, selectedAlertId, onSelectAlert }: MapVi
 
   const recenterMap = () => {
     if (mapInstanceRef.current && selectedAlert) {
-      mapInstanceRef.current.setView(
-        [selectedAlert.location.lat, selectedAlert.location.lng],
-        14,
-        { animate: true }
-      );
+      mapInstanceRef.current.setView([selectedAlert.location.lat, selectedAlert.location.lng], 14, {
+        animate: true
+      });
     }
   };
 
@@ -239,7 +237,10 @@ export function MapView({ alerts, fleet, selectedAlertId, onSelectAlert }: MapVi
           Telemetry Map
         </span>
         <span className="flex items-center gap-1 text-[9px] font-mono font-bold text-emerald-400 bg-emerald-950/70 border border-emerald-800/70 px-1.5 py-0.2 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+          <span
+            className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"
+            aria-hidden="true"
+          />
           LIVE
         </span>
       </div>

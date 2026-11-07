@@ -29,9 +29,7 @@ describe('escapeCsvField', () => {
   });
 
   it('keeps the apostrophe inside the quotes when the formula also needs quoting', () => {
-    expect(escapeCsvField('=HYPERLINK("http://x","y")')).toBe(
-      '"\'=HYPERLINK(""http://x"",""y"")"'
-    );
+    expect(escapeCsvField('=HYPERLINK("http://x","y")')).toBe('"\'=HYPERLINK(""http://x"",""y"")"');
   });
 
   it('does not touch a formula trigger that appears mid-field', () => {

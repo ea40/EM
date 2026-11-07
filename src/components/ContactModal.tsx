@@ -2,13 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { EmergencyAlert } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import { Modal } from './ui/Modal';
-import {
-  PhoneCall,
-  PhoneOff,
-  Stethoscope,
-  UserRound,
-  X
-} from 'lucide-react';
+import { PhoneCall, PhoneOff, Stethoscope, UserRound, X } from 'lucide-react';
 
 type CallState = 'IDLE' | 'DIALING' | 'CONNECTED' | 'ENDED';
 
@@ -81,7 +75,11 @@ export function ContactModal({ alert, onClose }: ContactModalProps) {
   };
 
   return (
-    <Modal isOpen={Boolean(alert)} onClose={onClose} label={`Caregiver dialer for ${alert.patientName}`}>
+    <Modal
+      isOpen={Boolean(alert)}
+      onClose={onClose}
+      label={`Caregiver dialer for ${alert.patientName}`}
+    >
       <div className="space-y-5">
         {/* Header */}
         <header className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
@@ -131,8 +129,12 @@ export function ContactModal({ alert, onClose }: ContactModalProps) {
             <div className="panel-inset mx-auto flex max-w-xs items-center gap-2 p-2.5 text-left">
               <Stethoscope className="w-3.5 h-3.5 shrink-0 text-cyan-400" aria-hidden="true" />
               <div className="min-w-0">
-                <p className="truncate text-[11px] font-bold text-slate-200">{contact.doctorName}</p>
-                <p className="data-num truncate text-[10px] text-slate-400">{contact.doctorPhone}</p>
+                <p className="truncate text-[11px] font-bold text-slate-200">
+                  {contact.doctorName}
+                </p>
+                <p className="data-num truncate text-[10px] text-slate-400">
+                  {contact.doctorPhone}
+                </p>
               </div>
             </div>
           )}
@@ -166,9 +168,14 @@ export function ContactModal({ alert, onClose }: ContactModalProps) {
           {callState === 'CONNECTED' && (
             <div className="space-y-2 rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-3">
               <p className="flex items-center justify-center gap-2 text-[11px] font-bold text-emerald-400">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" aria-hidden="true" />
+                <span
+                  className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"
+                  aria-hidden="true"
+                />
                 CONNECTED
-                <span className="data-num font-mono text-slate-200">{formatCallDuration(timerSecs)}</span>
+                <span className="data-num font-mono text-slate-200">
+                  {formatCallDuration(timerSecs)}
+                </span>
               </p>
               <div className="flex h-6 items-center justify-center gap-1" aria-hidden="true">
                 {[40, 70, 30, 90, 50, 80, 40].map((height, index) => (

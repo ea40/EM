@@ -24,7 +24,13 @@ interface ModalProps {
  * focus restoration. Every action modal in the console renders through this so
  * the a11y contract lives in one place instead of five.
  */
-export function Modal({ isOpen, onClose, label, children, panelClassName = 'max-w-lg' }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  label,
+  children,
+  panelClassName = 'max-w-lg'
+}: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 

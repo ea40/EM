@@ -1,21 +1,21 @@
 export type TriageCode = 'RED' | 'AMBER' | 'GREEN' | 'RESOLVED';
 
-export type EventType = 
-  | 'MANUAL_SOS' 
-  | 'FALL_DETECTED' 
-  | 'CRITICAL_HYPOXIA' 
-  | 'TACHYCARDIAC_SPIKE' 
-  | 'ARRHYTHMIA_DETECTED' 
+export type EventType =
+  | 'MANUAL_SOS'
+  | 'FALL_DETECTED'
+  | 'CRITICAL_HYPOXIA'
+  | 'TACHYCARDIAC_SPIKE'
+  | 'ARRHYTHMIA_DETECTED'
   | 'ROUTINE_TELEMETRY';
 
-export type PageRoute = 
-  | 'DASHBOARD' 
-  | 'PATIENTS' 
-  | 'HARDWARE' 
+export type PageRoute =
+  | 'DASHBOARD'
+  | 'PATIENTS'
+  | 'HARDWARE'
   | 'SIMULATOR'
-  | 'FLEET' 
-  | 'ANALYTICS' 
-  | 'CAREGIVERS' 
+  | 'FLEET'
+  | 'ANALYTICS'
+  | 'CAREGIVERS'
   | 'SETTINGS';
 
 export interface Location {

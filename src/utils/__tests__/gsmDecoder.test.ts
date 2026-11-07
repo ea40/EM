@@ -157,7 +157,9 @@ describe('decodeGSMSMS — triage classification', () => {
 
   it('does not raise RED when the impact sits below the fall threshold', () => {
     // 1.0g + 0.5g = 1.5g, below 3.0g.
-    expect(classify('EB-1#ROUTINE_TELEMETRY#9.03,38.74#HR:72#SPO2:99#ACC:1.0,0.5,0.1')).toBe('GREEN');
+    expect(classify('EB-1#ROUTINE_TELEMETRY#9.03,38.74#HR:72#SPO2:99#ACC:1.0,0.5,0.1')).toBe(
+      'GREEN'
+    );
   });
 
   it('raises RED on critical hypoxia', () => {

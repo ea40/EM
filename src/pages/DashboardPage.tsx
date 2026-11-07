@@ -39,8 +39,7 @@ export function DashboardPage({
   );
 
   const selectedPatient = useMemo(
-    () =>
-      selectedAlert ? patients.find(p => p.id === selectedAlert.patientId) ?? null : null,
+    () => (selectedAlert ? (patients.find(p => p.id === selectedAlert.patientId) ?? null) : null),
     [patients, selectedAlert]
   );
 
@@ -189,6 +188,32 @@ export function DashboardPage({
     }
   };
 
+  const handleLeftKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setLeftWidth(w => Math.max(260, w - 20));
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      setLeftWidth(w => Math.min(600, w + 20));
+    } else if (e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      handleResetLeft();
+    }
+  };
+
+  const handleMapKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setMapHeightPercent(p => Math.max(25, p - 5));
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setMapHeightPercent(p => Math.min(75, p + 5));
+    } else if (e.key === 'Home' || e.key === 'End') {
+      e.preventDefault();
+      handleResetMap();
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -218,10 +243,15 @@ export function DashboardPage({
         role="separator"
         aria-orientation="vertical"
         aria-label="Resize distress queue panel"
+        aria-valuenow={Math.round(leftWidth)}
+        aria-valuemin={260}
+        aria-valuemax={600}
+        tabIndex={0}
+        onKeyDown={handleLeftKeyDown}
         onPointerDown={handleLeftPointerDown}
         onDoubleClick={handleResetLeft}
-        className="group relative hidden lg:flex w-2 shrink-0 cursor-col-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 select-none z-10"
-        title="Drag to resize panel · Double-click to reset"
+        className="group relative hidden lg:flex w-2 shrink-0 cursor-col-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
+        title="Drag or use Left/Right arrow keys to resize panel · Double-click to reset"
       >
         <div className="h-8 w-1 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
       </div>
@@ -249,10 +279,15 @@ export function DashboardPage({
           role="separator"
           aria-orientation="horizontal"
           aria-label="Resize Map and ECG panels"
+          aria-valuenow={Math.round(mapHeightPercent)}
+          aria-valuemin={25}
+          aria-valuemax={75}
+          tabIndex={0}
+          onKeyDown={handleMapKeyDown}
           onPointerDown={handleMapPointerDown}
           onDoubleClick={handleResetMap}
-          className="group relative flex h-2 shrink-0 cursor-row-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 select-none z-10"
-          title="Drag to resize Map vs ECG · Double-click to reset"
+          className="group relative flex h-2 shrink-0 cursor-row-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
+          title="Drag or use Up/Down arrow keys to resize Map vs ECG · Double-click to reset"
         >
           <div className="h-1 w-8 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
         </div>
@@ -280,8 +315,8 @@ function EmptyMonitor() {
       <div>
         <p className="text-sm font-bold text-slate-300">No patient selected</p>
         <p className="mt-1 max-w-[16rem] text-[11px] leading-relaxed text-slate-500">
-          Choose an incident from the triage queue or a marker on the map to open the live
-          ECG monitor.
+          Choose an incident from the triage queue or a marker on the map to open the live ECG
+          monitor.
         </p>
       </div>
       <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">

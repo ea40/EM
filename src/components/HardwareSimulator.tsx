@@ -58,15 +58,16 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
     }
   };
 
-  const latestRaw = logs.length > 0 ? logs[logs.length - 1].rawPayload : `EB-101#MANUAL_SOS#9.0024,38.7842#HR:88#SPO2:97#TMP:37.1#BAT:88%`;
+  const latestRaw =
+    logs.length > 0
+      ? logs[logs.length - 1].rawPayload
+      : `EB-101#MANUAL_SOS#9.0024,38.7842#HR:88#SPO2:97#TMP:37.1#BAT:88%`;
   const decodedObj = latestRaw ? decodeGSMSMS(latestRaw) : null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/95 border-t-2 border-amber-500/80 shadow-2xl backdrop-blur-xl transition-all duration-300">
-      
       {/* Drawer Header Bar */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800">
-        
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg">
             <Cpu className="w-4 h-4 text-amber-400 animate-pulse" />
@@ -80,7 +81,9 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
             <button
               onClick={() => setActiveTab('PRESETS')}
               className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                activeTab === 'PRESETS' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
+                activeTab === 'PRESETS'
+                  ? 'bg-amber-500 text-slate-950 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               1-Click Triggers
@@ -88,7 +91,9 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
             <button
               onClick={() => setActiveTab('CUSTOM')}
               className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                activeTab === 'CUSTOM' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
+                activeTab === 'CUSTOM'
+                  ? 'bg-amber-500 text-slate-950 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Custom SMS Payload Injector
@@ -96,7 +101,9 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
             <button
               onClick={() => setActiveTab('TERMINAL')}
               className={`px-3 py-1 rounded-md font-semibold transition-all flex items-center gap-1 ${
-                activeTab === 'TERMINAL' ? 'bg-amber-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
+                activeTab === 'TERMINAL'
+                  ? 'bg-amber-500 text-slate-950 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Terminal className="w-3 h-3" />
@@ -111,22 +118,24 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
         >
           <X className="w-4 h-4" />
         </button>
-
       </div>
 
       {/* Main Drawer Body Content */}
       <div className="p-4 max-h-[360px] overflow-y-auto">
-        
         {/* TAB 1: 1-Click Presets */}
         {activeTab === 'PRESETS' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>Evaluator Demo Console: Click any preset button to inject a real-time GSM SMS payload into the triage engine:</span>
-              <span className="text-amber-400 font-mono font-semibold">Simulating Ethio-Telecom GSM Cell Tower</span>
+              <span>
+                Evaluator Demo Console: Click any preset button to inject a real-time GSM SMS
+                payload into the triage engine:
+              </span>
+              <span className="text-amber-400 font-mono font-semibold">
+                Simulating Ethio-Telecom GSM Cell Tower
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              
               {/* Button 1: SOS Press */}
               <button
                 onClick={() => runPreset('SOS')}
@@ -214,7 +223,6 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
                   EB-104#TACHYCARDIAC_SPIKE#HR:164...
                 </div>
               </button>
-
             </div>
           </div>
         )}
@@ -224,20 +232,24 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
           <form onSubmit={handleInjectCustom} className="space-y-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
               <div>
-                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">Wearable ID</label>
+                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">
+                  Wearable ID
+                </label>
                 <input
                   type="text"
                   value={deviceSerial}
-                  onChange={(e) => setDeviceSerial(e.target.value)}
+                  onChange={e => setDeviceSerial(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-amber-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">Trigger Event</label>
+                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">
+                  Trigger Event
+                </label>
                 <select
                   value={eventType}
-                  onChange={(e) => setEventType(e.target.value as EventType)}
+                  onChange={e => setEventType(e.target.value as EventType)}
                   className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-amber-400"
                 >
                   <option value="MANUAL_SOS">MANUAL_SOS</option>
@@ -248,55 +260,61 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">GPS Lat / Lng</label>
+                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">
+                  GPS Lat / Lng
+                </label>
                 <div className="flex gap-1">
                   <input
                     type="text"
                     value={lat}
-                    onChange={(e) => setLat(e.target.value)}
+                    onChange={e => setLat(e.target.value)}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                   <input
                     type="text"
                     value={lng}
-                    onChange={(e) => setLng(e.target.value)}
+                    onChange={e => setLng(e.target.value)}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">HR (BPM) / SpO2 (%)</label>
+                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">
+                  HR (BPM) / SpO2 (%)
+                </label>
                 <div className="flex gap-1">
                   <input
                     type="number"
                     value={hr}
-                    onChange={(e) => setHr(Number(e.target.value))}
+                    onChange={e => setHr(Number(e.target.value))}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                   <input
                     type="number"
                     value={spo2}
-                    onChange={(e) => setSpo2(Number(e.target.value))}
+                    onChange={e => setSpo2(Number(e.target.value))}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">Temp (°C) / Battery</label>
+                <label className="block text-slate-400 text-[10px] uppercase font-semibold mb-1">
+                  Temp (°C) / Battery
+                </label>
                 <div className="flex gap-1">
                   <input
                     type="number"
                     step="0.1"
                     value={temp}
-                    onChange={(e) => setTemp(Number(e.target.value))}
+                    onChange={e => setTemp(Number(e.target.value))}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                   <input
                     type="number"
                     value={battery}
-                    onChange={(e) => setBattery(Number(e.target.value))}
+                    onChange={e => setBattery(Number(e.target.value))}
                     className="w-1/2 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 font-mono text-xs"
                   />
                 </div>
@@ -311,7 +329,6 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
                   <span>Transmit SMS</span>
                 </button>
               </div>
-
             </div>
           </form>
         )}
@@ -319,21 +336,26 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
         {/* TAB 3: Raw Terminal Log Stream */}
         {activeTab === 'TERMINAL' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-            
             {/* Console Log Stream */}
             <div className="lg:col-span-2 bg-[#060911] border border-slate-800 rounded-xl p-3 font-mono text-[11px] text-emerald-400 h-48 overflow-y-auto space-y-1.5 shadow-inner">
               <div className="text-slate-500 pb-1 border-b border-slate-800 text-[10px] flex items-center justify-between">
                 <span>[GSM SIM800 / SIM7000 HARDWARE TELEMETRY STREAM]</span>
                 <span>BAUD: 115200</span>
               </div>
-              {logs.map((log) => (
+              {logs.map(log => (
                 <div key={log.id} className="leading-relaxed flex items-start gap-2">
                   <span className="text-slate-500 shrink-0">[{log.timestamp}]</span>
-                  <span className={`font-semibold ${
-                    log.type === 'TRIAGE' ? 'text-rose-400' :
-                    log.type === 'SMS_INCOMING' ? 'text-amber-300' :
-                    log.type === 'AUDIO' ? 'text-cyan-300' : 'text-emerald-400'
-                  }`}>
+                  <span
+                    className={`font-semibold ${
+                      log.type === 'TRIAGE'
+                        ? 'text-rose-400'
+                        : log.type === 'SMS_INCOMING'
+                          ? 'text-amber-300'
+                          : log.type === 'AUDIO'
+                            ? 'text-cyan-300'
+                            : 'text-emerald-400'
+                    }`}
+                  >
                     {log.message}
                   </span>
                 </div>
@@ -354,12 +376,9 @@ export const HardwareSimulator: React.FC<HardwareSimulatorProps> = ({
                 <p className="text-slate-500 mt-4 text-center">No raw SMS payload received yet</p>
               )}
             </div>
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 };

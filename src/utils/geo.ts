@@ -22,6 +22,9 @@ export function haversineKm(lat1: number, lon1: number, lat2: number, lon2: numb
 }
 
 /** Converts a distance in km to a whole-minute ETA, floored at `minMinutes`. */
-export function estimateEtaMinutes(distanceKm: number, minMinutes: number = MIN_ETA_MINUTES): number {
+export function estimateEtaMinutes(
+  distanceKm: number,
+  minMinutes: number = MIN_ETA_MINUTES
+): number {
   return Math.max(minMinutes, Math.round(distanceKm * URBAN_TRAFFIC_MINUTES_PER_KM));
 }

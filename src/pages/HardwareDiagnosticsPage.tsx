@@ -1,18 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import type { EventType, HardwareDeviceDiagnostics, TerminalLog, ThresholdSettings } from '../types';
+import type {
+  EventType,
+  HardwareDeviceDiagnostics,
+  TerminalLog,
+  ThresholdSettings
+} from '../types';
 import { HARDWARE_DEVICES } from '../data/mockData';
 import { decodeGSMSMS } from '../utils/gsmDecoder';
-import {
-  Battery,
-  Cpu,
-  Layers,
-  Radio,
-  Send,
-  ShieldCheck,
-  Terminal,
-  Wifi,
-  Zap
-} from 'lucide-react';
+import { Battery, Cpu, Layers, Radio, Send, ShieldCheck, Terminal, Wifi, Zap } from 'lucide-react';
 
 type HardwareDiagnosticsPageProps = {
   logs: TerminalLog[];
@@ -194,9 +189,7 @@ export function HardwareDiagnosticsPage({
           label="Mean battery health"
           value={fleetStats.meanBattery === null ? '—' : fleetStats.meanBattery.toFixed(1)}
           unit="%"
-          valueClass={
-            fleetStats.lowBattery.length > 0 ? 'text-amber-400' : 'text-emerald-400'
-          }
+          valueClass={fleetStats.lowBattery.length > 0 ? 'text-amber-400' : 'text-emerald-400'}
           detail={
             fleetStats.lowBattery.length === 0
               ? 'No units below 20%'
@@ -250,13 +243,27 @@ export function HardwareDiagnosticsPage({
               </caption>
               <thead className="border-b border-slate-800 bg-navy-950/60 text-[10px] uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th scope="col" className="p-2.5 font-semibold">Serial</th>
-                  <th scope="col" className="p-2.5 font-semibold">Wearer</th>
-                  <th scope="col" className="p-2.5 font-semibold">PCB</th>
-                  <th scope="col" className="p-2.5 font-semibold">Battery</th>
-                  <th scope="col" className="p-2.5 font-semibold">GSM</th>
-                  <th scope="col" className="p-2.5 font-semibold">GPS sats</th>
-                  <th scope="col" className="p-2.5 font-semibold">Status</th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    Serial
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    Wearer
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    PCB
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    Battery
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    GSM
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    GPS sats
+                  </th>
+                  <th scope="col" className="p-2.5 font-semibold">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -307,7 +314,9 @@ export function HardwareDiagnosticsPage({
                         {device.satellitesLocked}
                       </td>
                       <td className="p-2.5">
-                        <span className={`inline-block rounded border px-2 py-0.5 text-[10px] font-bold ${DEVICE_STATUS_STYLES[device.status]}`}>
+                        <span
+                          className={`inline-block rounded border px-2 py-0.5 text-[10px] font-bold ${DEVICE_STATUS_STYLES[device.status]}`}
+                        >
                           {device.status.replaceAll('_', ' ')}
                         </span>
                       </td>

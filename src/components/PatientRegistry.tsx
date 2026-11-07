@@ -4,15 +4,7 @@ import { buildCsv, downloadCsv } from '../utils/csv';
 import { safeImageUrl } from '../utils/escapeHtml';
 import { triageStyle } from '../utils/triage';
 import { Modal } from './ui/Modal';
-import {
-  Download,
-  MapPin,
-  Search,
-  ShieldAlert,
-  UserPlus,
-  Users,
-  X
-} from 'lucide-react';
+import { Download, MapPin, Search, ShieldAlert, UserPlus, Users, X } from 'lucide-react';
 
 type PatientRegistryProps = {
   patients: Patient[];
@@ -115,7 +107,10 @@ export function PatientRegistry({ patients, onAddPatient, onSelectPatient }: Pat
 
   const ageValue = Number(form.age);
   const isAgeValid =
-    form.age.trim() !== '' && Number.isInteger(ageValue) && ageValue >= AGE_MIN && ageValue <= AGE_MAX;
+    form.age.trim() !== '' &&
+    Number.isInteger(ageValue) &&
+    ageValue >= AGE_MIN &&
+    ageValue <= AGE_MAX;
   const isNameValid = form.name.trim() !== '';
   const isSerialValid = form.serial.trim() !== '';
   const canSubmit = isNameValid && isAgeValid && isSerialValid;
@@ -305,14 +300,30 @@ export function PatientRegistry({ patients, onAddPatient, onSelectPatient }: Pat
           </caption>
           <thead className="sticky top-0 z-10 border-b border-slate-800 bg-navy-950/95 text-[10px] uppercase tracking-wider text-slate-400 backdrop-blur">
             <tr>
-              <th scope="col" className="p-3 font-semibold">Patient</th>
-              <th scope="col" className="p-3 font-semibold">Chronic condition</th>
-              <th scope="col" className="p-3 font-semibold">Hardware serial</th>
-              <th scope="col" className="p-3 font-semibold">Blood</th>
-              <th scope="col" className="p-3 font-semibold">Sub-city</th>
-              <th scope="col" className="p-3 font-semibold">Primary contact</th>
-              <th scope="col" className="p-3 font-semibold">Triage</th>
-              <th scope="col" className="p-3 text-right font-semibold">Actions</th>
+              <th scope="col" className="p-3 font-semibold">
+                Patient
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Chronic condition
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Hardware serial
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Blood
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Sub-city
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Primary contact
+              </th>
+              <th scope="col" className="p-3 font-semibold">
+                Triage
+              </th>
+              <th scope="col" className="p-3 text-right font-semibold">
+                Actions
+              </th>
             </tr>
           </thead>
 
@@ -320,10 +331,7 @@ export function PatientRegistry({ patients, onAddPatient, onSelectPatient }: Pat
             {filteredPatients.length === 0 ? (
               <tr>
                 <td colSpan={8} className="p-10 text-center">
-                  <ShieldAlert
-                    className="mx-auto mb-2 w-7 h-7 text-slate-700"
-                    aria-hidden="true"
-                  />
+                  <ShieldAlert className="mx-auto mb-2 w-7 h-7 text-slate-700" aria-hidden="true" />
                   <p className="text-xs font-semibold text-slate-400">
                     No patients match this filter
                   </p>
@@ -448,11 +456,7 @@ export function PatientRegistry({ patients, onAddPatient, onSelectPatient }: Pat
       </div>
 
       {/* Register patient */}
-      <Modal
-        isOpen={isAddModalOpen}
-        onClose={closeAddModal}
-        label="Register wearable patient"
-      >
+      <Modal isOpen={isAddModalOpen} onClose={closeAddModal} label="Register wearable patient">
         <div className="space-y-4">
           <header className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
@@ -651,74 +655,75 @@ export function PatientRegistry({ patients, onAddPatient, onSelectPatient }: Pat
               </header>
 
               <div className="space-y-3 text-xs">
-            <dl className="grid grid-cols-2 gap-3">
-              <div className="panel-inset p-3">
-                <dt className="eyebrow">Wearable hardware serial</dt>
-                <dd className="data-num mt-1 font-mono text-sm font-bold text-cyan-400">
-                  {profilePatient.wearableSerial}
-                </dd>
-              </div>
-              <div className="panel-inset p-3">
-                <dt className="eyebrow">Blood group &amp; age</dt>
-                <dd className="data-num mt-1 font-mono text-sm font-bold text-slate-200">
-                  {profilePatient.bloodType} &middot; {profilePatient.age} yrs &middot;{' '}
-                  {profilePatient.gender}
-                </dd>
-              </div>
-            </dl>
-
-            <section className="panel-inset p-3">
-              <h3 className="eyebrow">Caregiver &amp; physician contacts</h3>
-              <div className="mt-2 flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-bold text-slate-200">
-                    {profilePatient.contact.primaryName}
-                  </p>
-                  <p className="data-num font-mono text-slate-400">
-                    {profilePatient.contact.primaryPhone}
-                  </p>
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">
-                    {profilePatient.contact.relation}
-                  </p>
-                </div>
-                {profilePatient.contact.doctorName && (
-                  <div className="text-right">
-                    <p className="font-bold text-emerald-400">
-                      {profilePatient.contact.doctorName}
-                    </p>
-                    <p className="data-num font-mono text-slate-400">
-                      {profilePatient.contact.doctorPhone ?? '—'}
-                    </p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">
-                      Attending physician
-                    </p>
+                <dl className="grid grid-cols-2 gap-3">
+                  <div className="panel-inset p-3">
+                    <dt className="eyebrow">Wearable hardware serial</dt>
+                    <dd className="data-num mt-1 font-mono text-sm font-bold text-cyan-400">
+                      {profilePatient.wearableSerial}
+                    </dd>
                   </div>
+                  <div className="panel-inset p-3">
+                    <dt className="eyebrow">Blood group &amp; age</dt>
+                    <dd className="data-num mt-1 font-mono text-sm font-bold text-slate-200">
+                      {profilePatient.bloodType} &middot; {profilePatient.age} yrs &middot;{' '}
+                      {profilePatient.gender}
+                    </dd>
+                  </div>
+                </dl>
+
+                <section className="panel-inset p-3">
+                  <h3 className="eyebrow">Caregiver &amp; physician contacts</h3>
+                  <div className="mt-2 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-slate-200">
+                        {profilePatient.contact.primaryName}
+                      </p>
+                      <p className="data-num font-mono text-slate-400">
+                        {profilePatient.contact.primaryPhone}
+                      </p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">
+                        {profilePatient.contact.relation}
+                      </p>
+                    </div>
+                    {profilePatient.contact.doctorName && (
+                      <div className="text-right">
+                        <p className="font-bold text-emerald-400">
+                          {profilePatient.contact.doctorName}
+                        </p>
+                        <p className="data-num font-mono text-slate-400">
+                          {profilePatient.contact.doctorPhone ?? '—'}
+                        </p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">
+                          Attending physician
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+
+                <section className="panel-inset p-3">
+                  <h3 className="eyebrow">Registered residence</h3>
+                  <p className="mt-1 font-semibold text-slate-200">
+                    {profilePatient.location.subCity} — {profilePatient.location.address}
+                  </p>
+                  <p className="data-num mt-1 font-mono text-[10px] text-slate-500">
+                    {profilePatient.location.lat.toFixed(4)},{' '}
+                    {profilePatient.location.lng.toFixed(4)}
+                  </p>
+                </section>
+
+                {profilePatient.notesHistory && profilePatient.notesHistory.length > 0 && (
+                  <section className="panel-inset p-3">
+                    <h3 className="eyebrow">Clinical notes</h3>
+                    <ul className="mt-2 space-y-1.5">
+                      {profilePatient.notesHistory.map((note, index) => (
+                        <li key={`${index}-${note}`} className="text-[11px] text-slate-300">
+                          {note}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 )}
-              </div>
-            </section>
-
-            <section className="panel-inset p-3">
-              <h3 className="eyebrow">Registered residence</h3>
-              <p className="mt-1 font-semibold text-slate-200">
-                {profilePatient.location.subCity} — {profilePatient.location.address}
-              </p>
-              <p className="data-num mt-1 font-mono text-[10px] text-slate-500">
-                {profilePatient.location.lat.toFixed(4)}, {profilePatient.location.lng.toFixed(4)}
-              </p>
-            </section>
-
-            {profilePatient.notesHistory && profilePatient.notesHistory.length > 0 && (
-              <section className="panel-inset p-3">
-                <h3 className="eyebrow">Clinical notes</h3>
-                <ul className="mt-2 space-y-1.5">
-                  {profilePatient.notesHistory.map((note, index) => (
-                    <li key={`${index}-${note}`} className="text-[11px] text-slate-300">
-                      {note}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
               </div>
 
               <div className="flex justify-end gap-2">

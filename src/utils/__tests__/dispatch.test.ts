@@ -16,7 +16,9 @@ const origin: Location = {
   address: 'Test reference point'
 };
 
-const hospital = (overrides: Partial<HospitalNode> & { id: string; lat: number; lng: number }): HospitalNode => ({
+const hospital = (
+  overrides: Partial<HospitalNode> & { id: string; lat: number; lng: number }
+): HospitalNode => ({
   name: `Hospital ${overrides.id}`,
   subCity: 'Bole Sub-City',
   phone: '+251 11 000 0000',

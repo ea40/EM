@@ -58,16 +58,12 @@ describe('validateThresholds', () => {
 
   it('rejects a heart-rate warning at or above the critical ceiling', () => {
     const errors = validateThresholds(withOverrides({ hrWarningHigh: 160, hrCriticalHigh: 160 }));
-    expect(errors).toContain(
-      'Heart rate warning threshold must sit below the critical threshold.'
-    );
+    expect(errors).toContain('Heart rate warning threshold must sit below the critical threshold.');
   });
 
   it('rejects a low heart-rate floor at or above the high warning band', () => {
     const errors = validateThresholds(withOverrides({ hrCriticalLow: 120, hrWarningHigh: 120 }));
-    expect(errors).toContain(
-      'Low heart rate threshold must sit below the high warning threshold.'
-    );
+    expect(errors).toContain('Low heart rate threshold must sit below the high warning threshold.');
   });
 
   it('rejects an empty GSM port', () => {

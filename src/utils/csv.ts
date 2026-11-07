@@ -32,7 +32,10 @@ export function escapeCsvField(value: unknown): string {
 }
 
 /** Serialises a header row plus data rows into an RFC 4180 CSV document. */
-export function buildCsv(headers: readonly string[], rows: readonly (readonly unknown[])[]): string {
+export function buildCsv(
+  headers: readonly string[],
+  rows: readonly (readonly unknown[])[]
+): string {
   const lines = [headers.map(escapeCsvField).join(',')];
   for (const row of rows) {
     lines.push(row.map(escapeCsvField).join(','));
