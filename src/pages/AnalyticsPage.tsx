@@ -85,7 +85,7 @@ export function AnalyticsPage({ alerts, patients }: AnalyticsPageProps) {
           icon={<Timer className="w-3.5 h-3.5" aria-hidden="true" />}
           label="Mean dispatch ETA"
           value={meanEtaMinutes === null ? '—' : `${meanEtaMinutes.toFixed(1)} min`}
-          accent="text-emerald-400"
+          accent="text-emerald-400 led-glow-emerald"
           detail={
             dispatched.length === 0
               ? 'No units dispatched yet'
@@ -96,14 +96,14 @@ export function AnalyticsPage({ alerts, patients }: AnalyticsPageProps) {
           icon={<TrendingDown className="w-3.5 h-3.5" aria-hidden="true" />}
           label="Open critical incidents"
           value={String(alerts.filter(a => a.code === 'RED').length)}
-          accent="text-rose-400"
+          accent="text-rose-400 led-glow-red"
           detail={`${alerts.filter(a => a.code === 'AMBER').length} elevated alongside`}
         />
         <Kpi
           icon={<ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />}
           label="Resolution rate"
           value={resolutionRate === null ? '—' : `${resolutionRate.toFixed(0)}%`}
-          accent="text-cyan-300"
+          accent="text-cyan-300 led-glow-cyan"
           detail={`${resolvedCount} of ${alerts.length} incidents closed`}
         />
         <Kpi

@@ -250,10 +250,10 @@ export function DashboardPage({
         onKeyDown={handleLeftKeyDown}
         onPointerDown={handleLeftPointerDown}
         onDoubleClick={handleResetLeft}
-        className="group relative hidden lg:flex w-2 shrink-0 cursor-col-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
+        className="group relative hidden lg:flex w-2.5 shrink-0 cursor-col-resize items-center justify-center transition-all hover:bg-cyan-500/10 active:bg-cyan-500/30 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
         title="Drag or use Left/Right arrow keys to resize panel · Double-click to reset"
       >
-        <div className="h-8 w-1 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
+        <div className="h-10 w-1 rounded-full bg-slate-700/80 transition-all duration-150 group-hover:h-16 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)] group-active:bg-cyan-300" />
       </div>
 
       {/* Right column: Map (Top) and Live ECG Rhythm Trace (Bottom) */}
@@ -286,10 +286,10 @@ export function DashboardPage({
           onKeyDown={handleMapKeyDown}
           onPointerDown={handleMapPointerDown}
           onDoubleClick={handleResetMap}
-          className="group relative flex h-2 shrink-0 cursor-row-resize items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
+          className="group relative flex h-2.5 shrink-0 cursor-row-resize items-center justify-center transition-all hover:bg-cyan-500/10 active:bg-cyan-500/30 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-10"
           title="Drag or use Up/Down arrow keys to resize Map vs ECG · Double-click to reset"
         >
-          <div className="h-1 w-8 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
+          <div className="h-1 w-10 rounded-full bg-slate-700/80 transition-all duration-150 group-hover:w-16 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)] group-active:bg-cyan-300" />
         </div>
 
         {/* BOTTOM: Live ECG + telemetry (side-by-side monitor layout) */}

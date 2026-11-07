@@ -229,12 +229,12 @@ function AlertCard({
 
   return (
     <article
-      className={`relative rounded-xl border transition-colors ${
+      className={`relative rounded-xl border transition-all duration-150 ease-out-expo ${
         isSelected
-          ? 'border-rose-500/70 shadow-glow-red'
+          ? 'border-rose-500/80 shadow-glow-red -translate-y-0.5'
           : isRed
-            ? 'border-rose-800/60'
-            : 'border-slate-800 hover:border-slate-700'
+            ? 'border-rose-800/60 hover:-translate-y-0.5 hover:border-rose-600/80 hover:shadow-elev-2'
+            : 'border-slate-800 hover:-translate-y-0.5 hover:border-slate-700 hover:shadow-elev-2'
       }`}
       style={{ backgroundColor: isSelected ? 'rgba(30, 41, 59, 0.9)' : `${style.hex}08` }}
     >

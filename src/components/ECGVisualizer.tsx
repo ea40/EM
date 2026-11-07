@@ -80,10 +80,10 @@ const TONE_BAR: Record<Tone, string> = {
 };
 
 const TONE_VALUE: Record<Tone, string> = {
-  rose: 'text-rose-400',
-  amber: 'text-amber-300',
-  emerald: 'text-emerald-400',
-  cyan: 'text-cyan-300',
+  rose: 'text-rose-400 led-glow-red',
+  amber: 'text-amber-300 led-glow-amber',
+  emerald: 'text-emerald-400 led-glow-emerald',
+  cyan: 'text-cyan-300 led-glow-cyan',
   slate: 'text-slate-100'
 };
 

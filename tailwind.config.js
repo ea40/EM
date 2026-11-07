@@ -55,7 +55,9 @@ export default {
         'elev-3': '0 18px 40px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(148, 163, 184, 0.08)',
         'glow-red': '0 0 0 1px rgba(239, 68, 68, 0.35), 0 0 24px -4px rgba(239, 68, 68, 0.45)',
         'glow-amber': '0 0 0 1px rgba(245, 158, 11, 0.3), 0 0 20px -6px rgba(245, 158, 11, 0.4)',
-        'glow-cyan': '0 0 0 1px rgba(6, 182, 212, 0.3), 0 0 20px -6px rgba(6, 182, 212, 0.4)'
+        'glow-cyan': '0 0 0 1px rgba(6, 182, 212, 0.3), 0 0 20px -6px rgba(6, 182, 212, 0.4)',
+        'glow-emerald': '0 0 0 1px rgba(16, 185, 129, 0.3), 0 0 20px -6px rgba(16, 185, 129, 0.4)',
+        'glow-beam': '0 0 10px rgba(6, 182, 212, 0.6), 0 0 20px rgba(6, 182, 212, 0.3)'
       },
       transitionTimingFunction: {
         'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)'

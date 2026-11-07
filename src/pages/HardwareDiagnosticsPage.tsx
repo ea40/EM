@@ -298,7 +298,9 @@ export function HardwareDiagnosticsPage({
                       </td>
                       <td
                         className={`data-num p-2.5 font-mono font-bold ${
-                          isLowBattery ? 'text-rose-400' : 'text-emerald-400'
+                          isLowBattery
+                            ? 'text-rose-400 led-glow-red'
+                            : 'text-emerald-400 led-glow-emerald'
                         }`}
                       >
                         {device.batteryLevel}%

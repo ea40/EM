@@ -80,7 +80,10 @@ export function FleetNetworkPage({ fleet, alerts }: FleetNetworkPageProps) {
             const totalUnits = fleet.filter(unit => unit.hospitalId === hospital.id).length;
 
             return (
-              <article key={hospital.id} className="panel flex flex-col p-4">
+              <article
+                key={hospital.id}
+                className="panel flex flex-col p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-700/80 hover:shadow-elev-2"
+              >
                 <header className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h3 className="truncate text-sm font-bold text-slate-100">{hospital.name}</h3>
@@ -99,7 +102,9 @@ export function FleetNetworkPage({ fleet, alerts }: FleetNetworkPageProps) {
                     <dt className="eyebrow">Units ready</dt>
                     <dd
                       className={`data-num mt-1 font-mono text-sm font-extrabold ${
-                        readyUnits === 0 ? 'text-rose-400' : 'text-emerald-400'
+                        readyUnits === 0
+                          ? 'text-rose-400 led-glow-red'
+                          : 'text-emerald-400 led-glow-emerald'
                       }`}
                     >
                       {readyUnits}
@@ -113,7 +118,7 @@ export function FleetNetworkPage({ fleet, alerts }: FleetNetworkPageProps) {
                   */}
                   <div className="panel-inset p-2">
                     <dt className="eyebrow">Units deployed</dt>
-                    <dd className="data-num mt-1 font-mono text-sm font-extrabold text-cyan-300">
+                    <dd className="data-num mt-1 font-mono text-sm font-extrabold text-cyan-300 led-glow-cyan">
                       {deployedUnits}
                     </dd>
                   </div>

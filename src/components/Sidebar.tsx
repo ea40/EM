@@ -234,10 +234,10 @@ export function Sidebar({
           onKeyDown={handleSidebarKeyDown}
           onPointerDown={handleSidebarPointerDown}
           onDoubleClick={handleResetSidebarWidth}
-          className="group absolute right-0 top-0 bottom-0 w-2.5 translate-x-1/2 cursor-col-resize flex items-center justify-center transition-colors hover:bg-cyan-500/20 active:bg-cyan-500/40 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-50"
+          className="group absolute right-0 top-0 bottom-0 w-2.5 translate-x-1/2 cursor-col-resize flex items-center justify-center transition-all hover:bg-cyan-500/10 active:bg-cyan-500/30 focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none select-none z-50"
           title="Drag or use Left/Right arrow keys to resize sidebar · Double-click to reset"
         >
-          <div className="h-10 w-1 rounded-full bg-slate-700/80 transition-colors group-hover:bg-cyan-400 group-active:bg-cyan-300" />
+          <div className="h-12 w-1 rounded-full bg-slate-700/80 transition-all duration-150 group-hover:h-24 group-hover:bg-cyan-400 group-hover:shadow-[0_0_12px_rgba(6,182,212,0.8)] group-active:bg-cyan-300" />
         </div>
       )}
       {/* Branding */}

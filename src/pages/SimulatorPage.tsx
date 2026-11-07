@@ -161,7 +161,7 @@ export function SimulatorPage({ onSimulateAlert, logs, thresholds }: SimulatorPa
                 key={preset.id}
                 type="button"
                 onClick={() => onSimulateAlert(preset.payload, preset.label)}
-                className="panel group flex flex-col gap-3 p-4 text-left transition-colors hover:border-slate-600"
+                className="panel group flex flex-col gap-3 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elev-2 hover:border-amber-500/60"
                 style={{ borderColor: `${style.hex}44` }}
               >
                 <span className="flex items-start justify-between gap-2">
@@ -391,11 +391,11 @@ export function SimulatorPage({ onSimulateAlert, logs, thresholds }: SimulatorPa
 
 const LOG_TYPE_STYLES: Record<TerminalLog['type'], string> = {
   INFO: 'text-slate-400',
-  SMS_INCOMING: 'text-amber-300',
-  DECODE: 'text-cyan-300',
-  TRIAGE: 'text-rose-400',
+  SMS_INCOMING: 'text-amber-300 led-glow-amber',
+  DECODE: 'text-cyan-300 led-glow-cyan',
+  TRIAGE: 'text-rose-400 led-glow-red',
   AUDIO: 'text-violet-400',
-  DISPATCH: 'text-emerald-400'
+  DISPATCH: 'text-emerald-400 led-glow-emerald'
 };
 
 type FieldProps = {
