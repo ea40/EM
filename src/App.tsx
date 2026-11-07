@@ -28,6 +28,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { DispatchModal } from './components/DispatchModal';
 import { ContactModal } from './components/ContactModal';
 import { ResolutionModal } from './components/ResolutionModal';
+import { Analytics } from '@vercel/analytics/react';
 
 const TELEMETRY_PULSE_MS = 4000;
 const MAX_LOG_ENTRIES = 200;
@@ -435,6 +436,9 @@ export function App() {
       <span className="sr-only" aria-live="polite">
         {activeAlert ? `${activeAlert.patientName} action dialog open.` : ''}
       </span>
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
