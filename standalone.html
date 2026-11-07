@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMER-BRACE™ // Emergency Telemetry & Clinical Dispatch Network</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emer: { red: '#EF4444', amber: '#F59E0B', cyan: '#06B6D4', emerald: '#10B981', purple: '#8B5CF6' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & Babel CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { background-color: #0B0F19; color: #F1F5F9; font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0F1524; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+    .leaflet-container { background: #0B0F19 !important; font-family: 'Inter', sans-serif !important; }
+    .leaflet-popup-content-wrapper { background: #111827 !important; color: #F3F4F6 !important; border: 1px solid #1F2937 !important; border-radius: 0.75rem !important; }
+    .leaflet-popup-tip { background: #111827 !important; }
+  </style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 overflow-hidden selection:bg-rose-500 selection:text-white">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- Sound Engine ---
+    class AudioSynthEngine {
+      constructor() { this.ctx = null; this.muted = false; }
+      getCtx() {
+        if (this.muted) return null;
+        if (!this.ctx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) this.ctx = new Ctx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+        return this.ctx;
+      }
+      setMuted(m) { this.muted = m; }
+      playRedAlert() {
+        const c = this.getCtx(); if (!c) return;
+        try {
+          const now = c.currentTime, o1 = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain();
+          o1.type = 'sawtooth'; o2.type = 'square';
+          o1.frequency.setValueAtTime(880, now); o1.frequency.setValueAtTime(1760, now + 0.15);
+          o2.frequency.setValueAtTime(440, now); o2.frequency.setValueAtTime(880, now + 0.15);
+          g.gain.setValueAtTime(0.3, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+          o1.connect(g); o2.connect(g); g.connect(c.destination);
+          o1.start(now); o2.start(now); o1.stop(now + 0.45); o2.stop(now + 0.45);
+        } catch(e){}
+      }
+      playAmberAlert() {
+        const c = this.getCtx(); if (!c) return;
+        try {
+          const now = c.currentTime, o = c.createOscillator(), g = c.createGain();
+          o.type = 'sine'; o.frequency.setValueAtTime(587, now); o.frequency.setValueAtTime(740, now + 0.12);
+          g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          o.connect(g); g.connect(c.destination); o.start(now); o.stop(now + 0.3);
+        } catch(e){}
+      }
+      playResolve() {
+        const c = this.getCtx(); if (!c) return;
+        try {
+          const now = c.currentTime;
+          [523.25, 659.25, 783.99].forEach((f, i) => {
+            const o = c.createOscillator(), g = c.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(f, now + i * 0.08);
+            g.gain.setValueAtTime(0.18, now + i * 0.08); g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.4);
+            o.connect(g); g.connect(c.destination); o.start(now + i * 0.08); o.stop(now + i * 0.08 + 0.4);
+          });
+        } catch(e){}
+      }
+    }
+    const audioSynth = new AudioSynthEngine();
+
+    // --- GSM SMS Decoder ---
+    function decodeGSMSMS(rawPayload) {
+      const parts = rawPayload.trim().split('#');
+      let serial = parts[0] || 'EB-100';
+      let eventType = 'ROUTINE_TELEMETRY';
+      let lat = 9.0300, lng = 38.7400, hr = 75, spo2 = 98, temp = 37.0, bat = 90;
+      let accelX = 0, accelY = 0, accelZ = 0.98, isFall = false, isSos = false;
+
+      if (parts.length >= 2) {
+        const ev = parts[1].toUpperCase();
+        if (ev.includes('SOS')) { eventType = 'MANUAL_SOS'; isSos = true; }
+        else if (ev.includes('FALL')) { eventType = 'FALL_DETECTED'; isFall = true; }
+        else if (ev.includes('HYPOXIA') || ev.includes('SPO2')) { eventType = 'CRITICAL_HYPOXIA'; }
+        else if (ev.includes('TACHY') || ev.includes('ARRHYTHMIA')) { eventType = 'TACHYCARDIAC_SPIKE'; }
+      }
+
+      for (let i = 2; i < parts.length; i++) {
+        const p = parts[i];
+        if (p.includes(',')) {
+          const c = p.split(',');
+          if (!isNaN(parseFloat(c[0]))) lat = parseFloat(c[0]);
+          if (!isNaN(parseFloat(c[1]))) lng = parseFloat(c[1]);
+        } else if (p.startsWith('HR:')) hr = parseInt(p.replace('HR:', ''), 10) || 75;
+        else if (p.startsWith('SPO2:')) spo2 = parseInt(p.replace('SPO2:', '').replace('%',''), 10) || 98;
+        else if (p.startsWith('TMP:')) temp = parseFloat(p.replace('TMP:', '')) || 37.0;
+        else if (p.startsWith('BAT:')) bat = parseInt(p.replace('BAT:', '').replace('%',''), 10) || 90;
+      }
+
+      let triageCode = 'GREEN';
+      let summary = 'Vitals within normal limits';
+      if (isSos) { triageCode = 'RED'; summary = 'MANUAL SOS PRESSED BY WEARABLE USER'; }
+      else if (isFall) { triageCode = 'RED'; summary = 'CRITICAL MATERNAL FALL & IMPACT DETECTED'; }
+      else if (spo2 < 80) { triageCode = 'RED'; summary = `CRITICAL HYPOXIA (SpO2: ${spo2}% < 80%)`; }
+      else if (hr > 150) { triageCode = 'RED'; summary = `CARDIAC TACHYCARDIAC SPIKE (HR: ${hr} BPM > 150)`; }
+      else if (spo2 < 90 || hr > 120) { triageCode = 'AMBER'; summary = `ELEVATED VITAL RISK (SpO2: ${spo2}%, HR: ${hr} BPM)`; }
+
+      return {
+        deviceSerial: serial, eventType, lat, lng,
+        vitals: { heartRate: hr, spo2, temperature: temp, battery: bat, accelX, accelY, accelZ, isFallDetected: isFall, isSosPressed: isSos, lastUpdated: new Date().toLocaleTimeString() },
+        triageCode, distressSummary: summary, rawString: rawPayload
+      };
+    }
+
+    // Mock Patients
+    const INITIAL_PATIENTS = [
+      { id: 'EB-101', name: "Abeba Tadesse", age: 28, gender: "Female", bloodType: "O+", photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150", chronicCondition: "34-Week High-Risk Pregnancy (Preeclampsia)", wearableSerial: "EB-101-ET", contact: { primaryName: "Tewodros Bekele", primaryPhone: "+251 91 123 4567" }, location: { lat: 9.0024, lng: 38.7842, subCity: "Bole Sub-City" }, currentVitals: { heartRate: 142, spo2: 93, temperature: 37.8, battery: 84 }, triageStatus: 'RED', distressReason: 'Manual SOS Triggered - Abdominal Pain' },
+      { id: 'EB-102', name: "Mulugeta Assefa", age: 64, gender: "Male", bloodType: "A+", photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150", chronicCondition: "Severe COPD & Hypoxia Risk", wearableSerial: "EB-102-ET", contact: { primaryName: "Hiwot Mulugeta", primaryPhone: "+251 92 345 6789" }, location: { lat: 9.0188, lng: 38.7431, subCity: "Lideta Sub-City" }, currentVitals: { heartRate: 128, spo2: 76, temperature: 36.5, battery: 91 }, triageStatus: 'RED', distressReason: 'Critical SpO2 Drop Below 80%' },
+      { id: 'EB-103', name: "Tigist Haile", age: 31, gender: "Female", bloodType: "B+", photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", chronicCondition: "Epilepsy & Sudden Fall Risk", wearableSerial: "EB-103-ET", contact: { primaryName: "Haile Gebreselassie", primaryPhone: "+251 91 987 6543" }, location: { lat: 9.0355, lng: 38.7690, subCity: "Yeka Sub-City" }, currentVitals: { heartRate: 138, spo2: 91, temperature: 37.4, battery: 89 }, triageStatus: 'RED', distressReason: 'Sudden Impact & Fall Detected' },
+      { id: 'EB-104', name: "Kassahun Worku", age: 58, gender: "Male", bloodType: "AB+", photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150", chronicCondition: "Atrial Fibrillation & Cardiac Risk", wearableSerial: "EB-104-ET", contact: { primaryName: "Bethlehem Kassahun", primaryPhone: "+251 93 456 7890" }, location: { lat: 9.0112, lng: 38.7522, subCity: "Kirkos Sub-City" }, currentVitals: { heartRate: 164, spo2: 89, temperature: 37.1, battery: 72 }, triageStatus: 'AMBER', distressReason: 'Cardiac Tachycardia (>160 BPM)' }
+    ];
+
+    const INITIAL_ALERTS = INITIAL_PATIENTS.map(p => ({
+      id: `ALT-${p.id}`, patientId: p.id, patientName: p.name, patientPhoto: p.photoUrl,
+      chronicCondition: p.chronicCondition, code: p.triageStatus, title: p.distressReason,
+      location: p.location, vitals: p.currentVitals, timestamp: new Date().toISOString(), dispatchStatus: 'UNASSIGNED'
+    }));
+
+    function App() {
+      const [route, setRoute] = useState('DASHBOARD');
+      const [patients, setPatients] = useState(INITIAL_PATIENTS);
+      const [alerts, setAlerts] = useState(INITIAL_ALERTS);
+      const [selectedAlertId, setSelectedAlertId] = useState(INITIAL_ALERTS[0].id);
+
+      const selectedAlert = alerts.find(a => a.id === selectedAlertId) || alerts[0];
+      const selectedPatient = patients.find(p => p.id === selectedAlert?.patientId) || patients[0];
+
+      // Simulated ECG Canvas Animation
+      const canvasRef = useRef(null);
+      useEffect(() => {
+        if (route !== 'DASHBOARD') return;
+        const canvas = canvasRef.current; if (!canvas) return;
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        let frame; let x = 0; const width = canvas.width = 600; const height = canvas.height = 180;
+        const hr = selectedPatient?.currentVitals.heartRate || 75;
+
+        const render = () => {
+          ctx.fillStyle = '#0B0F19'; ctx.fillRect(0, 0, width, height);
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.12)'; ctx.lineWidth = 1;
+          for (let g = 0; g < width; g += 20) { ctx.beginPath(); ctx.moveTo(g, 0); ctx.lineTo(g, height); ctx.stroke(); }
+          for (let g = 0; g < height; g += 20) { ctx.beginPath(); ctx.moveTo(0, g); ctx.lineTo(width, g); ctx.stroke(); }
+
+          ctx.strokeStyle = hr > 130 ? '#EF4444' : '#06B6D4'; ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          x = (x + 3) % width;
+          for (let i = 0; i < width; i++) {
+            let y = height / 2;
+            const phase = ((i * (hr / 60) * 0.05) % 1);
+            if (phase > 0.3 && phase < 0.35) y -= 50;
+            else if (phase > 0.35 && phase < 0.38) y += 20;
+            else if (phase > 0.5 && phase < 0.6) y -= 15;
+            if (i === 0) ctx.moveTo(i, y); else ctx.lineTo(i, y);
+          }
+          ctx.stroke();
+          ctx.fillStyle = '#10B981'; ctx.fillRect(x, 0, 3, height);
+          frame = requestAnimationFrame(render);
+        };
+        render();
+        return () => cancelAnimationFrame(frame);
+      }, [route, selectedPatient]);
+
+      const triggerPreset = (rawPayload) => {
+        const decoded = decodeGSMSMS(rawPayload);
+        if (decoded.triageCode === 'RED') audioSynth.playRedAlert();
+        else if (decoded.triageCode === 'AMBER') audioSynth.playAmberAlert();
+
+        const altId = `ALT-${decoded.deviceSerial}`;
+        const newAlt = {
+          id: altId, patientId: decoded.deviceSerial, patientName: selectedPatient?.name || `Patient ${decoded.deviceSerial}`,
+          patientPhoto: selectedPatient?.photoUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+          chronicCondition: selectedPatient?.chronicCondition || "Maternal Telemetry",
+          code: decoded.triageCode, title: decoded.distressSummary, location: { lat: decoded.lat, lng: decoded.lng, subCity: "Bole Sub-City", address: "Sector 4" },
+          vitals: decoded.vitals, timestamp: new Date().toISOString(), rawSmsPayload: rawPayload, dispatchStatus: 'UNASSIGNED'
+        };
+
+        setAlerts(prev => [newAlt, ...prev.filter(a => a.id !== altId)]);
+        setSelectedAlertId(altId);
+      };
+
+      return (
+        <div className="flex h-screen w-screen overflow-hidden">
+          
+          {/* Sidebar */}
+          <aside className="w-64 bg-slate-950 border-r border-slate-800 p-4 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-red-700 flex items-center justify-center font-bold text-white shadow-lg">
+                  ⚡
+                </div>
+                <div>
+                  <h1 className="font-extrabold text-base tracking-tight text-white">EMER-BRACE<span className="text-rose-500">™</span></h1>
+                  <p className="text-[10px] font-bold text-rose-400 uppercase">Clinical Dispatch</p>
+                </div>
+              </div>
+
+              {/* Navigation Items */}
+              <nav className="space-y-1 text-xs font-semibold">
+                {[
+                  { id: 'DASHBOARD', label: '⚡ Command Center' },
+                  { id: 'PATIENTS', label: '📋 Patient Registry' },
+                  { id: 'SIMULATOR', label: '⚡ Hardware Simulator (SIM800)' },
+                  { id: 'HARDWARE', label: '📟 Hardware Diagnostics' },
+                  { id: 'FLEET', label: '🚑 Fleet & Hospitals' },
+                  { id: 'ANALYTICS', label: '📊 Triage Intelligence' },
+                  { id: 'CAREGIVERS', label: '👥 Caregiver Network' },
+                  { id: 'SETTINGS', label: '⚙️ Gateway Settings' }
+                ].map(nav => (
+                  <button
+                    key={nav.id}
+                    onClick={() => setRoute(nav.id)}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
+                      route === nav.id ? 'bg-rose-600 text-white font-bold shadow-lg shadow-rose-950' : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                    }`}
+                  >
+                    <span>{nav.label}</span>
+                    {nav.id === 'SIMULATOR' && <span className="text-[9px] font-black bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded">NEW</span>}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-slate-300">
+              Created by <strong className="text-white">Emran Abduljelil Reshad</strong> (ALA Winner)
+            </div>
+          </aside>
+
+          {/* Main Content Page Router */}
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
+            
+            {/* Header */}
+            <header className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+              <h2 className="font-extrabold text-base text-slate-100 flex items-center gap-2">
+                {route === 'DASHBOARD' && 'Command Center // Dispatch & Live ECG Monitor'}
+                {route === 'PATIENTS' && 'High-Risk Patient Directory & Health Registry'}
+                {route === 'SIMULATOR' && '⚡ EMER-BRACE Hardware Testing Console (SIM800 Gateway Simulator)'}
+                {route === 'HARDWARE' && 'SIM800 2-PCB Wearable Hardware & Cell Gateway'}
+                {route === 'FLEET' && 'Addis Ababa Emergency Fleet & Medical Dispatch Hubs'}
+                {route === 'ANALYTICS' && 'Clinical Triage Reports & Sub-City Analytics'}
+                {route === 'CAREGIVERS' && 'Primary Caregiver Network & SMS Dispatch Log'}
+                {route === 'SETTINGS' && 'GSM Gateway Baud Rate & Clinical Threshold Config'}
+              </h2>
+
+              <button
+                onClick={() => setRoute('SIMULATOR')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow ${
+                  route === 'SIMULATOR' ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-800 text-amber-400 border-amber-500/40'
+                }`}
+              >
+                ⚡ Open Hardware Simulator Console
+              </button>
+            </header>
+
+            {/* Page Viewport */}
+            <main className="flex-1 p-3 overflow-y-auto">
+              
+              {/* PAGE: SIMULATOR (DEDICATED SEPARATE PAGE) */}
+              {route === 'SIMULATOR' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
+                  <div className="p-4 bg-slate-950 rounded-xl border border-amber-500/50 flex items-center justify-between">
+                    <div>
+                      <h3 className="font-extrabold text-base text-amber-400">⚡ EMER-BRACE Hardware Testing Studio (SIM800 Gateway Simulator)</h3>
+                      <p className="text-xs text-slate-400">Evaluator Demo Console: Test live hardware alerts without a physical wearable device</p>
+                    </div>
+                    <span className="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-800 font-mono text-xs font-bold rounded-lg">
+                      Cell Tower Simulator Active
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-xs text-slate-300 uppercase">1-Click Preset Alert Triggers:</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                      <button onClick={() => triggerPreset('EB-101#MANUAL_SOS#9.0024,38.7842#HR:142#SPO2:93#TMP:37.8#BAT:84%')} className="p-3 bg-rose-950 border border-rose-800 rounded-xl text-rose-300 hover:bg-rose-900 text-left space-y-1">
+                        <div className="font-extrabold text-rose-400">🚨 SOS Button Press</div>
+                        <div className="text-[10px] text-slate-300">Abeba Tadesse (Bole)</div>
+                      </button>
+                      <button onClick={() => triggerPreset('EB-102#CRITICAL_HYPOXIA#9.0188,38.7431#HR:128#SPO2:76#TMP:36.5#BAT:91%')} className="p-3 bg-rose-950 border border-rose-800 rounded-xl text-rose-300 hover:bg-rose-900 text-left space-y-1">
+                        <div className="font-extrabold text-rose-400">📉 SpO2 Drop (&lt;80%)</div>
+                        <div className="text-[10px] text-slate-300">Mulugeta Assefa (Lideta)</div>
+                      </button>
+                      <button onClick={() => triggerPreset('EB-103#FALL_DETECTED#9.0355,38.7690#HR:138#SPO2:91#TMP:37.4#BAT:89%')} className="p-3 bg-amber-950 border border-amber-800 rounded-xl text-amber-300 hover:bg-amber-900 text-left space-y-1">
+                        <div className="font-extrabold text-amber-400">⚠️ Fall Impact</div>
+                        <div className="text-[10px] text-slate-300">Tigist Haile (Yeka)</div>
+                      </button>
+                      <button onClick={() => triggerPreset('EB-104#TACHYCARDIAC_SPIKE#9.0112,38.7522#HR:164#SPO2:89#TMP:37.1#BAT:72%')} className="p-3 bg-rose-950 border border-rose-800 rounded-xl text-rose-300 hover:bg-rose-900 text-left space-y-1">
+                        <div className="font-extrabold text-rose-400">🩺 Cardiac Spike</div>
+                        <div className="text-[10px] text-slate-300">Kassahun Worku (Kirkos)</div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 1: DASHBOARD */}
+              {route === 'DASHBOARD' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-y-auto space-y-3">
+                    <h3 className="font-bold text-sm text-slate-200 uppercase">Distress Queue & Triage Feed</h3>
+                    {alerts.map(alt => (
+                      <div key={alt.id} onClick={() => setSelectedAlertId(alt.id)} className={`p-3.5 rounded-xl border cursor-pointer ${alt.id === selectedAlertId ? 'bg-slate-800 border-rose-500 ring-1 ring-rose-500' : 'bg-slate-950 border-slate-800'}`}>
+                        <div className="flex justify-between items-center font-bold text-sm">
+                          <span>{alt.patientName}</span>
+                          <span className="bg-rose-500 text-slate-950 text-[10px] px-2 py-0.5 rounded font-black">CODE {alt.code}</span>
+                        </div>
+                        <p className="text-xs text-rose-300 font-semibold mt-1">{alt.title}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between relative">
+                    <h3 className="font-bold text-sm text-slate-200 uppercase">Addis Ababa GPS Map</h3>
+                    <div className="flex-1 my-3 bg-[#060911] border border-slate-800 rounded-xl relative flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-rose-600 text-white font-extrabold flex items-center justify-center shadow-xl">EB</div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
+                    <h3 className="font-bold text-sm text-slate-200 uppercase">Live Cardiac ECG Rhythm</h3>
+                    <div className="bg-[#0B0F19] border border-slate-800 rounded-xl p-2">
+                      <canvas ref={canvasRef} className="w-full h-36 block" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 2: PATIENTS */}
+              {route === 'PATIENTS' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <h3 className="font-bold text-sm uppercase">Registered High-Risk Patients ({patients.length})</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px]">
+                        <tr>
+                          <th className="p-3">Patient</th>
+                          <th className="p-3">Condition</th>
+                          <th className="p-3">Wearable Serial</th>
+                          <th className="p-3">Contact</th>
+                          <th className="p-3">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {patients.map(p => (
+                          <tr key={p.id} className="hover:bg-slate-800/40">
+                            <td className="p-3 font-bold">{p.name} ({p.id})</td>
+                            <td className="p-3 text-rose-300 font-medium">{p.chronicCondition}</td>
+                            <td className="p-3 font-mono text-cyan-400 font-semibold">{p.wearableSerial}</td>
+                            <td className="p-3">{p.contact.primaryName} ({p.contact.primaryPhone})</td>
+                            <td className="p-3"><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-800">{p.triageStatus}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 3: HARDWARE */}
+              {route === 'HARDWARE' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 font-mono">
+                  <h3 className="font-bold text-sm uppercase font-sans">2-PCB Wearable Hardware Diagnostics</h3>
+                  <div className="grid grid-cols-3 gap-3 text-xs">
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <div className="text-slate-400 text-[10px]">ACTIVE WEARABLES</div>
+                      <div className="text-2xl font-bold text-cyan-400 mt-1">248 Units</div>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <div className="text-slate-400 text-[10px]">BATTERY AVERAGE</div>
+                      <div className="text-2xl font-bold text-amber-400 mt-1">87.4%</div>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <div className="text-slate-400 text-[10px]">CELL SIGNAL</div>
+                      <div className="text-2xl font-bold text-emerald-400 mt-1">-71 dBm</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 4: FLEET */}
+              {route === 'FLEET' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <h3 className="font-bold text-sm uppercase">Addis Ababa Ambulance Dispatch Fleet</h3>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <h4 className="font-bold text-cyan-400">Tikur Anbessa Specialized Hospital</h4>
+                      <p className="text-slate-400 mt-1">Lideta / Kirkos • 4 Ambulances Ready</p>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <h4 className="font-bold text-cyan-400">St. Paul's Millennium Medical College</h4>
+                      <p className="text-slate-400 mt-1">Gullele • 3 Ambulances Ready</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 5: ANALYTICS */}
+              {route === 'ANALYTICS' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 font-mono">
+                  <h3 className="font-bold text-sm uppercase font-sans">Triage Intelligence & Impact Metrics</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                      <div className="text-slate-400 text-[10px]">MEAN DISPATCH ETA</div>
+                      <div className="text-3xl font-extrabold text-emerald-400">4.1 mins (-59%)</div>
+                    </div>
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                      <div className="text-slate-400 text-[10px]">MATERNAL SAFETY RATE</div>
+                      <div className="text-3xl font-extrabold text-rose-400">99.4%</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 6: CAREGIVERS */}
+              {route === 'CAREGIVERS' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <h3 className="font-bold text-sm uppercase">Caregiver Network & Emergency Contacts</h3>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    {patients.map(p => (
+                      <div key={p.id} className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <div className="font-bold text-slate-100">{p.contact.primaryName}</div>
+                        <div className="text-rose-400 text-[11px]">Caregiver for: {p.name}</div>
+                        <div className="text-emerald-400 font-mono mt-1">{p.contact.primaryPhone}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PAGE 7: SETTINGS */}
+              {route === 'SETTINGS' && (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 font-mono text-xs">
+                  <h3 className="font-bold text-sm uppercase font-sans">System & Gateway Config</h3>
+                  <div className="space-y-2 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div>Port: <strong className="text-cyan-400">COM4 / /dev/ttyUSB0 (Ethio-Telecom Gateway)</strong></div>
+                    <div>Baud Rate: <strong className="text-slate-200">115200 Baud</strong></div>
+                    <div>SpO2 Critical Threshold: <strong className="text-rose-400">&lt;80%</strong></div>
+                    <div>Heart Rate High Threshold: <strong className="text-rose-400">&gt;150 BPM</strong></div>
+                  </div>
+                </div>
+              )}
+
+            </main>
+
+          </div>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

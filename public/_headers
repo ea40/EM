@@ -1,0 +1,39 @@
+# Production response headers.
+#
+# Netlify and Cloudflare Pages both read this file from the publish root. On
+# nginx/Apache, translate these into `add_header` / `Header set` directives —
+# the values are the same, only the syntax differs.
+#
+# Why a header and not a <meta> tag: `frame-ancestors` is ignored in a meta
+# policy, and `X-Frame-Options`, HSTS and `Permissions-Policy` have no meta
+# equivalent at all.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# Notes on the policy above:
+#
+#   style-src 'unsafe-inline'  Leaflet writes inline styles on every marker and
+#                              popup, and the map/marker chrome in this app uses
+#                              inline `style` attributes for triage colours. A
+#                              nonce cannot cover attribute styles.
+#   img-src https:             Patient photos and the OSM tile layer are remote.
+#   connect-src 'self'         No XHR/fetch/WebSocket to any third party. Add
+#                              your gateway origin here when the SIM800 bridge
+#                              is wired to a real backend.
+#   script-src 'self'          No inline scripts, no eval. If you add a analytics
+#                              or error-reporting vendor, add its origin
+#                              explicitly rather than widening to 'unsafe-inline'.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

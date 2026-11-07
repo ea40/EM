@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /*
+     * ES2021, not ES2020: the source uses `String.prototype.replaceAll` for the
+     * enum-to-label formatting (`EN_ROUTE` → `EN ROUTE`). Under the old lib that
+     * is a type error even though Vite's own build target supports it at runtime.
+     * `target` is bumped with it because the two disagreeing is a trap for the
+     * next person to raise one of them.
+     */
+    "target": "ES2021",
+    "useDefineForClassFields": true,
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"]
+}
