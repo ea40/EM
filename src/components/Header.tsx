@@ -78,6 +78,84 @@ export function Header({
     if (!nextMuted) audioSynth.playAmberAlert();
   };
 
+  /*
+   * Simplified, elegant Header for the Landing Page / Overview surface.
+   * Free of dense operational ticker telemetry to let the editorial hero breathe.
+   */
+  if (currentRoute === 'LANDING') {
+    return (
+      <header className="sticky top-0 z-30 h-12 shrink-0 border-b border-slate-800/80 bg-navy-950/90 px-4 text-slate-100 shadow-md backdrop-blur-md flex items-center justify-between">
+        {/* Left: Brand Identity */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleMenuClick}
+            aria-label="Toggle navigation menu"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-navy-900 px-2 py-1 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-600 transition-colors"
+          >
+            <Menu className="w-4 h-4" />
+            <span className="hidden sm:inline text-xs">Menu</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-cyan-500/50 bg-cyan-950/70 text-cyan-400">
+              <Radio className="w-3.5 h-3.5 animate-pulse" />
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-black tracking-tight text-white">EMER-BRACE</span>
+              <span className="hidden sm:inline-block rounded bg-cyan-950 border border-cyan-800/80 px-1.5 py-0.5 text-[9px] font-mono font-bold text-cyan-400">
+                ADDIS ABABA TELEMETRY
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Center: In-page navigation jump links */}
+        <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-slate-400">
+          <a href="#documents" className="hover:text-cyan-300 transition-colors">
+            3 Research Docs
+          </a>
+          <a href="#hardware" className="hover:text-cyan-300 transition-colors">
+            Dual-PCB Hardware
+          </a>
+          <a href="#pipeline" className="hover:text-cyan-300 transition-colors">
+            System Pipeline
+          </a>
+          <a href="#accolades" className="hover:text-cyan-300 transition-colors">
+            ALA Award
+          </a>
+        </nav>
+
+        {/* Right: Guide ? icon & Launch Console */}
+        <div className="flex items-center gap-2">
+          {onStartTour && (
+            <button
+              type="button"
+              onClick={onStartTour}
+              aria-label="Page Guide & System Help"
+              title="Page Guide & System Help"
+              className="flex h-7 w-7 items-center justify-center rounded-md border border-slate-700 bg-navy-900 text-slate-300 hover:border-cyan-400 hover:text-cyan-300 transition-colors"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => onNavigate('DASHBOARD')}
+            className="flex items-center gap-1.5 rounded-lg border border-emerald-500/80 bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-glow-emerald hover:bg-emerald-500 transition-all hover:scale-[1.02]"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Launch Console</span>
+          </button>
+        </div>
+      </header>
+    );
+  }
+
+  /*
+   * Full Operational Header for Command Center & secondary functional pages.
+   */
   return (
     <header className="sticky top-0 z-30 h-11 shrink-0 border-b border-slate-800 bg-navy-900/95 px-3 text-slate-100 shadow-elev-1 backdrop-blur-md flex items-center">
       <div className="flex w-full items-center justify-between gap-2 overflow-x-auto no-scrollbar">
@@ -119,7 +197,7 @@ export function Header({
           </div>
         </div>
 
-        {/* Center: Live Operations telemetry pills (Unified single-row) */}
+        {/* Center: Live Operations telemetry pills */}
         <div className="flex shrink-0 items-center gap-1.5">
           {/* GSM Gateway */}
           <span className="flex items-center gap-1 rounded-md border border-emerald-800/70 bg-emerald-950/50 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
@@ -170,41 +248,29 @@ export function Header({
           </span>
         </div>
 
-        {/* Right: Quick actions & Audio toggle */}
+        {/* Right: Quick actions, ? Guide logo button, Hardware & Sound */}
         <div className="flex shrink-0 items-center gap-1.5">
-          {/* Quick toggle to Landing/Overview or Console */}
-          {currentRoute === 'LANDING' ? (
-            <button
-              type="button"
-              onClick={() => onNavigate('DASHBOARD')}
-              className="flex items-center gap-1.5 rounded-md border border-emerald-500/70 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-bold text-emerald-300 shadow-sm hover:bg-emerald-900/60 transition-colors"
-            >
-              <LayoutDashboard className="w-3 h-3 text-emerald-400" />
-              <span className="hidden sm:inline">Command Console</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onNavigate('LANDING')}
-              className="hidden sm:flex items-center gap-1 rounded-md border border-slate-700 bg-navy-850 px-2 py-1 text-[11px] font-semibold text-slate-300 hover:border-slate-500 hover:text-white transition-colors"
-              title="Read research papers, pitch deck & hardware docs"
-            >
-              <Sparkles className="w-3 h-3 text-cyan-400" />
-              <span>About</span>
-            </button>
-          )}
+          {/* Quick link back to About / Showcase */}
+          <button
+            type="button"
+            onClick={() => onNavigate('LANDING')}
+            className="hidden sm:flex items-center gap-1 rounded-md border border-slate-700 bg-navy-850 px-2 py-1 text-[11px] font-semibold text-slate-300 hover:border-slate-500 hover:text-white transition-colors"
+            title="Read research papers, pitch deck & hardware docs"
+          >
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span>About</span>
+          </button>
 
-          {/* Interactive Tutorial Button */}
+          {/* Contextual Page Guide "?" Logo Button (No text to save space) */}
           {onStartTour && (
             <button
               type="button"
               onClick={onStartTour}
-              aria-label="Start interactive dashboard tour"
-              className="flex items-center gap-1 rounded-md border border-cyan-800/80 bg-cyan-950/60 px-2 py-1 text-[11px] font-bold text-cyan-300 hover:border-cyan-400 hover:bg-cyan-900/60 transition-colors"
-              title="Start step-by-step interactive walkthrough"
+              aria-label="Page Guide & System Help"
+              title="Page Guide & System Help (?)"
+              className="flex h-7 w-7 items-center justify-center rounded-md border border-cyan-800/80 bg-cyan-950/60 text-cyan-300 hover:border-cyan-400 hover:bg-cyan-900/60 hover:text-white transition-colors"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden sm:inline">Tour</span>
+              <HelpCircle className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
             </button>
           )}
 

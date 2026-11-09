@@ -25,7 +25,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CaregiverNetworkPage } from './pages/CaregiverNetworkPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { LandingPage } from './pages/LandingPage';
-import { DashboardTutorial } from './components/DashboardTutorial';
+import { PageGuideModal } from './components/PageGuideModal';
 
 import { DispatchModal } from './components/DispatchModal';
 import { ContactModal } from './components/ContactModal';
@@ -72,7 +72,7 @@ export function App() {
     }
     return 'LANDING';
   });
-  const [isTourOpen, setIsTourOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -114,14 +114,14 @@ export function App() {
   const navigateTo = (route: PageRoute) => {
     setCurrentRoute(route);
     setIsSidebarOpen(false);
-    if (route === 'DASHBOARD') {
-      try {
-        if (!localStorage.getItem('emer_tutorial_seen')) {
-          setIsTourOpen(true);
-        }
-      } catch {
-        // ignore
+    try {
+      if (!localStorage.getItem(`emer_guide_seen_${route}`)) {
+        setIsGuideOpen(true);
+      } else {
+        setIsGuideOpen(false);
       }
+    } catch {
+      // ignore
     }
   };
 
@@ -366,10 +366,7 @@ export function App() {
           activeDispatches={alerts.filter(a => a.dispatchStatus === 'DISPATCHED').length}
           onMenuToggle={() => setIsSidebarOpen(prev => !prev)}
           isSidebarOpen={isSidebarOpen}
-          onStartTour={() => {
-            if (currentRoute !== 'DASHBOARD') setCurrentRoute('DASHBOARD');
-            setIsTourOpen(true);
-          }}
+          onStartTour={() => setIsGuideOpen(true)}
         />
 
         <main
@@ -380,7 +377,7 @@ export function App() {
               onNavigate={navigateTo}
               onStartTour={() => {
                 navigateTo('DASHBOARD');
-                setIsTourOpen(true);
+                setIsGuideOpen(true);
               }}
             />
           )}
@@ -476,11 +473,11 @@ export function App() {
         {activeAlert ? `${activeAlert.patientName} action dialog open.` : ''}
       </span>
 
-      {/* Guided Walkthrough Tutorial */}
-      <DashboardTutorial
-        isOpen={isTourOpen}
-        onClose={() => setIsTourOpen(false)}
-        onNavigate={navigateTo}
+      {/* Contextual Per-Page Guide & Walkthrough */}
+      <PageGuideModal
+        currentRoute={currentRoute}
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
       />
 
       {/* Vercel Web Analytics */}
