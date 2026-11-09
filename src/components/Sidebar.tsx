@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Radio,
   Settings,
+  Sparkles,
   Users,
   X,
   Zap
@@ -51,6 +52,22 @@ export function Sidebar({
   availableAmbulancesCount
 }: SidebarProps) {
   const navSections: NavSection[] = [
+    {
+      id: 'showcase',
+      label: 'Overview & Research',
+      items: [
+        {
+          route: 'LANDING',
+          label: 'About EMER-BRACE',
+          icon: <Sparkles className="w-5 h-5 text-cyan-400" />,
+          badge: (
+            <span className="rounded-full bg-cyan-950 border border-cyan-800 px-1.5 py-0.5 text-[9px] font-bold text-cyan-300">
+              Showcase
+            </span>
+          )
+        }
+      ]
+    },
     {
       id: 'operations',
       label: 'Live operations',

@@ -9,6 +9,7 @@ export type EventType =
   | 'ROUTINE_TELEMETRY';
 
 export type PageRoute =
+  | 'LANDING'
   | 'DASHBOARD'
   | 'PATIENTS'
   | 'HARDWARE'

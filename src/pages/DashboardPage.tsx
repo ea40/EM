@@ -221,6 +221,7 @@ export function DashboardPage({
     >
       {/* Triage queue feed (Left column - resizable horizontally) */}
       <div
+        data-tour="distress-queue"
         className="min-h-0 overflow-hidden shrink-0"
         style={{
           width: isLgScreen ? `${leftWidth}px` : '100%',
@@ -263,6 +264,7 @@ export function DashboardPage({
       >
         {/* TOP: Geospatial dispatch map (resizable vertically) */}
         <div
+          data-tour="telemetry-map"
           className="min-h-0 overflow-hidden rounded-xl"
           style={{ height: `${mapHeightPercent}%` }}
         >
@@ -293,7 +295,7 @@ export function DashboardPage({
         </div>
 
         {/* BOTTOM: Live ECG + telemetry (side-by-side monitor layout) */}
-        <div className="min-h-0 flex-1 overflow-hidden rounded-xl">
+        <div data-tour="ecg-monitor" className="min-h-0 flex-1 overflow-hidden rounded-xl">
           {selectedAlert ? (
             <ECGVisualizer patient={selectedPatient} thresholds={thresholds} />
           ) : (

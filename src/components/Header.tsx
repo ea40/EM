@@ -2,7 +2,19 @@ import { useEffect, useState } from 'react';
 import type { PageRoute } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import { formatClockTime } from '../utils/format';
-import { Clock, Heart, Menu, Radio, ShieldAlert, Volume2, VolumeX, Zap } from 'lucide-react';
+import {
+  Clock,
+  Heart,
+  HelpCircle,
+  LayoutDashboard,
+  Menu,
+  Radio,
+  ShieldAlert,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap
+} from 'lucide-react';
 
 type HeaderProps = {
   currentRoute: PageRoute;
@@ -14,10 +26,12 @@ type HeaderProps = {
   onMobileMenuToggle?: () => void;
   onMenuToggle?: () => void;
   isSidebarOpen?: boolean;
+  onStartTour?: () => void;
 };
 
 /** Exhaustive by type — a new route cannot be added without naming its page. */
 const PAGE_TITLES: Record<PageRoute, string> = {
+  LANDING: 'EMER-BRACE · Project Overview & Research Publications',
   DASHBOARD: 'Command center · dispatch & live ECG monitor',
   PATIENTS: 'Patient directory & health profile registry',
   SIMULATOR: 'EMER-BRACE hardware testing console',
@@ -37,7 +51,8 @@ export function Header({
   activeDispatches = 0,
   onMobileMenuToggle,
   onMenuToggle,
-  isSidebarOpen
+  isSidebarOpen,
+  onStartTour
 }: HeaderProps) {
   const [timeStr, setTimeStr] = useState(() => formatClockTime());
 
@@ -157,8 +172,45 @@ export function Header({
 
         {/* Right: Quick actions & Audio toggle */}
         <div className="flex shrink-0 items-center gap-1.5">
+          {/* Quick toggle to Landing/Overview or Console */}
+          {currentRoute === 'LANDING' ? (
+            <button
+              type="button"
+              onClick={() => onNavigate('DASHBOARD')}
+              className="flex items-center gap-1.5 rounded-md border border-emerald-500/70 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-bold text-emerald-300 shadow-sm hover:bg-emerald-900/60 transition-colors"
+            >
+              <LayoutDashboard className="w-3 h-3 text-emerald-400" />
+              <span className="hidden sm:inline">Command Console</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onNavigate('LANDING')}
+              className="hidden sm:flex items-center gap-1 rounded-md border border-slate-700 bg-navy-850 px-2 py-1 text-[11px] font-semibold text-slate-300 hover:border-slate-500 hover:text-white transition-colors"
+              title="Read research papers, pitch deck & hardware docs"
+            >
+              <Sparkles className="w-3 h-3 text-cyan-400" />
+              <span>About</span>
+            </button>
+          )}
+
+          {/* Interactive Tutorial Button */}
+          {onStartTour && (
+            <button
+              type="button"
+              onClick={onStartTour}
+              aria-label="Start interactive dashboard tour"
+              className="flex items-center gap-1 rounded-md border border-cyan-800/80 bg-cyan-950/60 px-2 py-1 text-[11px] font-bold text-cyan-300 hover:border-cyan-400 hover:bg-cyan-900/60 transition-colors"
+              title="Start step-by-step interactive walkthrough"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+          )}
+
           <button
             type="button"
+            data-tour="header-sim"
             onClick={() => onNavigate('SIMULATOR')}
             aria-current={currentRoute === 'SIMULATOR' ? 'page' : undefined}
             className={`hidden lg:flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-bold transition-colors ${

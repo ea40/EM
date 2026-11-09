@@ -24,6 +24,8 @@ import { FleetNetworkPage } from './pages/FleetNetworkPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CaregiverNetworkPage } from './pages/CaregiverNetworkPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { LandingPage } from './pages/LandingPage';
+import { DashboardTutorial } from './components/DashboardTutorial';
 
 import { DispatchModal } from './components/DispatchModal';
 import { ContactModal } from './components/ContactModal';
@@ -64,7 +66,13 @@ export function App() {
     INITIAL_ALERTS[0]?.id ?? null
   );
 
-  const [currentRoute, setCurrentRoute] = useState<PageRoute>('DASHBOARD');
+  const [currentRoute, setCurrentRoute] = useState<PageRoute>(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('dashboard')) {
+      return 'DASHBOARD';
+    }
+    return 'LANDING';
+  });
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -106,6 +114,15 @@ export function App() {
   const navigateTo = (route: PageRoute) => {
     setCurrentRoute(route);
     setIsSidebarOpen(false);
+    if (route === 'DASHBOARD') {
+      try {
+        if (!localStorage.getItem('emer_tutorial_seen')) {
+          setIsTourOpen(true);
+        }
+      } catch {
+        // ignore
+      }
+    }
   };
 
   // Sidebar drawer: Escape or Alt+M toggles it.
@@ -349,9 +366,25 @@ export function App() {
           activeDispatches={alerts.filter(a => a.dispatchStatus === 'DISPATCHED').length}
           onMenuToggle={() => setIsSidebarOpen(prev => !prev)}
           isSidebarOpen={isSidebarOpen}
+          onStartTour={() => {
+            if (currentRoute !== 'DASHBOARD') setCurrentRoute('DASHBOARD');
+            setIsTourOpen(true);
+          }}
         />
 
-        <main className="flex-1 overflow-hidden p-2 min-h-0">
+        <main
+          className={`flex-1 overflow-hidden min-h-0 ${currentRoute === 'LANDING' ? 'p-0' : 'p-2'}`}
+        >
+          {currentRoute === 'LANDING' && (
+            <LandingPage
+              onNavigate={navigateTo}
+              onStartTour={() => {
+                navigateTo('DASHBOARD');
+                setIsTourOpen(true);
+              }}
+            />
+          )}
+
           {currentRoute === 'DASHBOARD' && (
             <DashboardPage
               alerts={alerts}
@@ -442,6 +475,13 @@ export function App() {
       <span className="sr-only" aria-live="polite">
         {activeAlert ? `${activeAlert.patientName} action dialog open.` : ''}
       </span>
+
+      {/* Guided Walkthrough Tutorial */}
+      <DashboardTutorial
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onNavigate={navigateTo}
+      />
 
       {/* Vercel Web Analytics */}
       <Analytics />
